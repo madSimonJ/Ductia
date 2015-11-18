@@ -11,6 +11,9 @@ promise
 };
 
 exports.SendFileNotFoundResponse = function(req, res) {
-  console.log("0000000000000000000000000000000 " + req.params[0])
   res.sendStatus(404);
+}
+
+exports.redirectToIndex = function(req, res) {
+  res.render('index');
 }

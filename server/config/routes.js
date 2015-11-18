@@ -8,6 +8,7 @@ module.exports = function(app) {
   apiRoutes.ConfigureApiRoutes(app);
   falcorRoutes.ConfigureFalcorRoutes(app);
   staticContentRoutes.configureStaticContentRoutes(app);
-  app.get('*', routeResponses.SendFileNotFoundResponse);
+  app.get('/', routeResponses.redirectToIndex);
+  app.get('*', routeResponses.redirectToIndex);
 
 }
