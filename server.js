@@ -24,4 +24,5 @@ console.log("configuring routes...");
 require('./server/config/routes')(app, config);
 console.log("routes configured.");
 
+console.log("listening on port " + port + "...");
 app.listen(port);

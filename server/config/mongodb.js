@@ -43,7 +43,6 @@ exports.FindOne = function(collectionName, query) {
 
 exports.Find = function(collectionName, query) {
   var deferred = Q.defer();
-  console.log("c = " + collectionName + ", q = " + JSON.stringify(query));
   var returnDocs = new Array();
   var cursor = databaseConnection.collection(collectionName).find();
   cursor.each(function(err, doc) {
@@ -54,11 +53,8 @@ exports.Find = function(collectionName, query) {
       if (doc !== null) {
         returnDocs.push(doc);
       } else {
-        console.log("resolved query");
-        console.log("doc = " + JSON.stringify(returnDocs));
         deferred.resolve(returnDocs);
       }
-
     }
 
   });

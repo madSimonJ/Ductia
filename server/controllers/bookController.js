@@ -1,5 +1,5 @@
 var mongodb = require('../config/mongodb');
-var routeResponses = require('../utilities/routeResponses');
+var routeResponses = require('../routes/routeResponses');
 
 var bookCollectionName = 'book';
 

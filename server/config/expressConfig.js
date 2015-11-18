@@ -29,6 +29,6 @@ module.exports = function(app, config) {
     extended: true
   }));
   app.use(bodyParser.json());
-  app.use(express.static(config.rootPath + '/public'));
+//  app.use(express.static(config.rootPath + '/public'));
 
 }
