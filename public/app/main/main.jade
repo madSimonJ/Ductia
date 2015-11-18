@@ -1,0 +1,14 @@
+.container
+  h1 Ductia
+  p A website for searching for exam pieces and the ideal books to get them with
+  table
+    thead
+      tr
+        th Board
+        th instrument
+        th Grade
+    tbody
+      tr(ng-repeat="exam in Exams")
+        td {{exam.examBoard}}
+        td {{exam.instrument}}
+        td {{exam.grade}}
