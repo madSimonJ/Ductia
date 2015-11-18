@@ -1,4 +1,7 @@
 var mongodb = require('../config/mongodb');
+var routeResponses = require('../utilities/routeResponses');
+
+var pieceCollectionName = 'piece';
 
 exports.getPiece = function(req, res) {
 
@@ -6,10 +9,5 @@ exports.getPiece = function(req, res) {
 
   var query = {_id: pieceId};
 
-  mongodb.FindOne("piece", query).then(function(record) {
-    res.status(200).send(record);
-  }).catch(function(error) {
-    console.log(error);
-    res.status(500).send({error: error});
-  });
+  routeResponses.SendDocumentIfFound(req, res, mongodb.FindOne(pieceCollectionName, query));
 }

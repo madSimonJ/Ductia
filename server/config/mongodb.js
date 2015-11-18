@@ -63,15 +63,5 @@ exports.Find = function(collectionName, query) {
 
   });
 
-
-  // databaseConnection.collection(collectionName).find({}, {} , function(err, data) {
-  //   if(!!err) {
-  //     deferred.reject("error getting records from database: " + err);
-  //   } else {
-  //     console.log("data = " + JSON.stringify(data));
-  //     deferred.resolve(data);
-  //   }
-  // });
-
   return deferred.promise;
 }

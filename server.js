@@ -1,5 +1,6 @@
 var express = require('express');
 var env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+var port = process.env.PORT || 8080;
 var app = express();
 
 console.log("");
@@ -23,4 +24,4 @@ console.log("configuring routes...");
 require('./server/config/routes')(app, config);
 console.log("routes configured.");
 
-app.listen(8080);
+app.listen(port);
