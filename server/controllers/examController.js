@@ -1,4 +1,4 @@
-var mongodb = require('../config/mongodb');
+var db = require('../config/databaseConfig');
 var routeResponses = require('../routes/routeResponses');
 
 var examCollectionName = 'exam';
@@ -11,11 +11,11 @@ exports.getExam = function(req, res) {
 
   var query = {examBoard: board, instrument: instrument, grade: parseInt(grade)};
 
-  routeResponses.SendDocumentIfFound(req, res, mongodb.FindOne(examCollectionName, query));
+  routeResponses.SendDocumentIfFound(req, res, db.FindOne(examCollectionName, query));
 }
 
 exports.getAllExams = function(req, res) {
   var query = {};
 
-  routeResponses.SendDocumentIfFound(req, res, mongodb.Find(examCollectionName, query));
+  routeResponses.SendDocumentIfFound(req, res, db.Find(examCollectionName, query));
 }

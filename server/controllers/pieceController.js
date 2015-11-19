@@ -1,4 +1,4 @@
-var mongodb = require('../config/mongodb');
+var db = require('../config/databaseConfig');
 var routeResponses = require('../routes/routeResponses');
 
 var pieceCollectionName = 'piece';
@@ -9,5 +9,5 @@ exports.getPiece = function(req, res) {
 
   var query = {_id: pieceId};
 
-  routeResponses.SendDocumentIfFound(req, res, mongodb.FindOne(pieceCollectionName, query));
+  routeResponses.SendDocumentIfFound(req, res, db.FindOne(pieceCollectionName, query));
 }
