@@ -10,7 +10,7 @@ console.log("Config settings imported");
 
 console.log("");
 console.log("configuring express...");
-require('./server/config/expressConfig')(app, environmentVariables);
+require('./server/config/middlewareConfig')(app, environmentVariables);
 console.log("Express configured.");
 
 console.log("");
