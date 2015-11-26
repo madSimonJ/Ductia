@@ -1,6 +1,31 @@
 angular.module('ductia').controller('instrumentCtrl', function($scope) {
   $scope.Instruments = [
+    'Baritone and Euphonium',
+    'Bassoon',
+    'Bass Trombone',
+    'Cello',
+    'Clarinet',
+    'Double Bass',
+    'Descant Recorder',
     'Flute',
-    'Descant Recorder'
+    'Guitar',
+    'Harp',
+    'Harpsichord',
+    'Horn',
+    'Horn (E Flat)',
+    'Keyboard',
+    'Music Theory',
+    'Oboe',
+    'Organ',
+    'Percussion',
+    'Piano',
+    'Saxophone',
+    'Singing',
+    'Treble Recorder',
+    'Trombone',
+    'Trumpet',
+    'Tuba',
+    'Viola',
+    'Violin'
   ];
 });
