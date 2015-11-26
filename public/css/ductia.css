@@ -1,5 +1,9 @@
-section.content {
-  height: 100%;
+footer {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
 }
 body {
   padding-top: 69px;
