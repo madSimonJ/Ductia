@@ -10,3 +10,9 @@ exports.getBook = function(req, res) {
 
   routeResponses.SendDocumentIfFound(req, res, db.FindOne(bookCollectionName, query));
 }
+
+exports.getAllBooks = function(req, res) {
+  var query = {};
+
+  routeResponses.SendDocumentIfFound(req, res, db.Find(bookCollectionName, query));
+}

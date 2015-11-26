@@ -1,0 +1,21 @@
+nav(class='navbar navbar-default navbar-inverse navbar-fixed-top' role='navigation')
+  #navbar-header
+    button(type='button' data-target='#navbar-collapse' data-toggle='collapse' class='navbar-toggle')
+      span(class='sr-only') Toggle navigation
+      span(class='icon-bar')
+      span(class='icon-bar')
+      span(class='icon-bar')
+    .navbar-brand Ductia
+  .collapse.navbar-collapse
+    ul.nav.navbar-nav
+      li.active
+        a(href='/') Home
+      li
+        a(href='/exams') Exams
+      li
+        a(href='/books') Books
+      li
+        a(href='/instruments') Instruments
+    form(role='search').navbar-form.navbar-left
+      div.form-group
+        input(type='text' placeholder='search').form-control

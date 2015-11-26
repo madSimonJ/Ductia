@@ -1,0 +1,14 @@
+.container
+  table
+    thead
+      tr
+        th Title
+        th ISBN
+        th Publisher
+        th Publication Date
+    tbody
+      tr(ng-repeat="book in Books")
+        td {{book.title}}
+        td {{book.isbn13}}
+        td {{book.publisher}}
+        td {{book.publicationDate}}

@@ -1,0 +1,12 @@
+.container
+  table
+    thead
+      tr
+        th Board
+        th instrument
+        th Grade
+    tbody
+      tr(ng-repeat="exam in Exams")
+        td {{exam.examBoard}}
+        td {{exam.instrument}}
+        td {{exam.grade}}
