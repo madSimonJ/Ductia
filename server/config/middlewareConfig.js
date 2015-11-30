@@ -37,7 +37,7 @@ module.exports = function(app, config) {
     return new falcorRouter([
       {
         route: "pieces[pieceId]",
-        get: function([pieceId]) {
+        get: function(pieceId) {
 
         }
       }
