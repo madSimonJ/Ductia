@@ -31,10 +31,17 @@ angular.module("ductia").config(function($routeProvider, $locationProvider) {
     controller: 'instrumentCtrl'
   });
 
-  $routeProvider.when('/pieces', {
-    templateUrl: '/partials/piece/pieces',
+
+    $routeProvider.when('/pieces', {
+      templateUrl: '/partials/piece/pieces',
+      controller: 'pieceCtrl'
+    });
+
+  $routeProvider.when('/pieces/:pieceId', {
+    templateUrl: '/partials/piece/pieceDetails',
     controller: 'pieceCtrl'
   });
+
 
 
 });
