@@ -11,9 +11,14 @@ angular.module("ductia").config(function($routeProvider, $locationProvider) {
     controller: 'mainCtrl'
   });
 
-  $routeProvider.when('/exams', {
-    templateUrl: '/partials/exam/exams',
+  $routeProvider.when('/exams/:board?/:instrument?/:grade?', {
+    templateUrl: '/partials/exam/examList',
     controller: 'examCtrl'
+  });
+
+  $routeProvider.when('/books/:isbn', {
+    templateUrl: '/partials/book/bookDetails',
+    controller: 'bookCtrl'
   });
 
   $routeProvider.when('/books', {
@@ -24,6 +29,11 @@ angular.module("ductia").config(function($routeProvider, $locationProvider) {
   $routeProvider.when('/instruments', {
     templateUrl: '/partials/instrument/instruments',
     controller: 'instrumentCtrl'
+  });
+
+  $routeProvider.when('/pieces', {
+    templateUrl: '/partials/piece/pieces',
+    controller: 'pieceCtrl'
   });
 
 

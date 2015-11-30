@@ -1,6 +1,6 @@
 var exams = [{
   _id: 'exam-flute-2014-grade1',
-  instrument: 'Flute',
+  instrument: 'flute',
   grade: 1,
   dateValidFrom: 2014,
   dateValidTo: 2017,
@@ -12,7 +12,7 @@ var exams = [{
   }
 }, {
   _id: 'exam-descantrecorder-2014-grade1',
-  instrument: 'Descant-Recorder',
+  instrument: 'descant-recorder',
   grade: 1,
   dateValidFrom: 2014,
   dateValidTo: 2017,

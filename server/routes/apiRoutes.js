@@ -8,11 +8,12 @@ exports.ConfigureApiRoutes = function(app) {
   app.get('/api', routeResponses.SendFileNotFoundResponse);
 
   app.get('/api/exams', examController.getAllExams)
-  app.get('/api/exams/:board/:instrument/:grade', examController.getExam);
+  app.get('/api/exams/:board/:instrument?/:grade?', examController.getExam);
 
   app.get('/api/books', bookController.getAllBooks);
   app.get('/api/books/:isbn', bookController.getBook);
 
+  app.get('/api/pieces', pieceController.getAllPieces);
   app.get('/api/pieces/:pieceId', pieceController.getPiece);
 
   app.all('/api/*', routeResponses.SendFileNotFoundResponse);

@@ -2,6 +2,8 @@ var express = require('express');
 var stylus = require('stylus');
 var morgan = require('morgan');
 var bodyParser = require("body-parser");
+var falcorExpress = require('falcor-express');
+var falcorRouter = require('falcor-router');
 //var passport = require('passport');
 //var cookieParser = require('cookie-parser');
 var session = require("express-session");
@@ -30,5 +32,16 @@ module.exports = function(app, config) {
   }));
   app.use(bodyParser.json());
 //  app.use(express.static(config.rootPath + '/public'));
+
+  app.use('/api/model.json', falcorExpress.dataSourceRoute(function(req,res) {
+    return new falcorRouter([
+      {
+        route: "pieces[pieceId]",
+        get: function([pieceId]) {
+
+        }
+      }
+    ]);
+  }));
 
 }

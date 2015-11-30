@@ -44,7 +44,8 @@ exports.FindOne = function(collectionName, query) {
 exports.Find = function(collectionName, query) {
   var deferred = Q.defer();
   var returnDocs = new Array();
-  var cursor = databaseConnection.collection(collectionName).find();
+  console.log("query2 = " + JSON.stringify(query));
+  var cursor = databaseConnection.collection(collectionName).find(query);
   cursor.each(function(err, doc) {
     if (!!err) {
       console.log("error reading record: " + err);

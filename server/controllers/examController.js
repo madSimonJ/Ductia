@@ -5,17 +5,31 @@ var examCollectionName = 'exam';
 
 exports.getExam = function(req, res) {
 
+  var query = {};
+
   var board = req.params.board;
+
+  if(!!board) {
+    query.examBoard = board;
+  }
+
   var instrument = req.params.instrument;
-  var grade = req.params.grade;
 
-  var query = {examBoard: board, instrument: instrument, grade: parseInt(grade)};
+  if(!!instrument) {
+    query.instrument = instrument.toLowerCase();
+  }
 
-  routeResponses.SendDocumentIfFound(req, res, db.FindOne(examCollectionName, query));
+  var grade = parseInt(req.params.grade);
+
+  if((!!grade) && (grade !== NaN))  {
+    query.grade =grade;
+  }
+  console.log("query = " + JSON.stringify(query));
+  routeResponses.SendDocumentIfFound(req, res, db.Find(examCollectionName, query));
 }
 
 exports.getAllExams = function(req, res) {
   var query = {};
-
+  console.log("get all exams");
   routeResponses.SendDocumentIfFound(req, res, db.Find(examCollectionName, query));
 }
