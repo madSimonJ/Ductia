@@ -36,7 +36,7 @@ module.exports = function(app, config) {
   app.use('/api/model.json', falcorExpress.dataSourceRoute(function(req,res) {
     return new falcorRouter([
       {
-        route: "pieces[pieceId]",
+        route: "pieces[{keys: pieceId}]",
         get: function(pieceId) {
 
         }
