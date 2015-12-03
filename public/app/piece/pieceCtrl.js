@@ -11,15 +11,11 @@ angular.module('ductia').controller('pieceCtrl', function($scope, $routeParams, 
     model.
       get('pieces["' + $routeParams.pieceId + '"].["title", "composer"]').
       then(function(response) {
-          console.log($scope.Piece);
           var pId = $routeParams.pieceId;
-          alert(pId);
-          console.log(response.json.pieces[pId]);
-          $scope.Piece = response.json.pieces[pId];
-          console.log($scope.Piece);
+          $scope.$apply(function() {
+            $scope.Piece = response.json.pieces[pId];
+          });
       });
-
-    // $scope.Piece = pieceFactory.get({pieceId: $routeParams.pieceId});
   } else {
     $scope.Pieces = pieceFactory.query({});
   }
