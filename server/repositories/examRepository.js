@@ -28,6 +28,17 @@ exports.getExam = function(req, res) {
   routeResponses.SendDocumentIfFound(req, res, db.Find(examCollectionName, query));
 }
 
+exports.getExamQuery = function(board, instrument, grade) {
+
+  var deferred = Q.defer();
+  var query = {examBoard: board, instrument: instrument, grade: grade};
+
+  db.FindOne(examCollectionName, query)
+    .then(function(data) {
+      deferred.resolve(results);
+    });
+}
+
 exports.getAllExams = function(req, res) {
   var query = {};
   console.log("get all exams");
