@@ -1,3 +1,0 @@
-exports.ConfigureFalcorRoutes = function(app) {
-
-}
