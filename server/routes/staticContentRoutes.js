@@ -1,3 +1,5 @@
+'use strict';
+
 var routeResponses = require('./routeResponses');
 var path = require('path');
 var websiteRootDirectory = path.join(__dirname, '../../');

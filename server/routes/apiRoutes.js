@@ -1,3 +1,5 @@
+'use strict';
+
 var examRepository = require('../repositories/examRepository');
 var bookRepository = require('../repositories/bookRepository');
 var pieceRepository = require('../repositories/pieceRepository');
