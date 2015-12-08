@@ -1,5 +1,6 @@
 var db = require('../config/databaseConfig');
 var routeResponses = require('../routes/routeResponses');
+var Q = require('q');
 
 var examCollectionName = 'exam';
 
@@ -29,14 +30,18 @@ exports.getExam = function(req, res) {
 }
 
 exports.getExamQuery = function(board, instrument, grade) {
-
+console.log("hello.  is it me you're looking for?");
+console.log("board = " + board + ", instrument = " + instrument + ", grade = " + grade);
   var deferred = Q.defer();
+console.log("hello. 2");
   var query = {examBoard: board, instrument: instrument, grade: grade};
-
+  console.log("db query = " + JSON.stringify(query));
   db.FindOne(examCollectionName, query)
     .then(function(data) {
       deferred.resolve(results);
     });
+
+    return deferred.promise;
 }
 
 exports.getAllExams = function(req, res) {

@@ -29,5 +29,6 @@ module.exports = function(app, config) {
   app.use(bodyParser.json());
   //  app.use(express.static(config.rootPath + '/public'));
 
-  app.use('/model.json', falcorRoutes.GetDataSourceRoute());
+  app.use('/falcor_router.json', falcorRoutes.GetRouter());
+  app.use('/falcor_model.json', falcorRoutes.GetDataSourceRoute());
 }
