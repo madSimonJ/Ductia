@@ -12,6 +12,7 @@
     "gulp": "^3.9.0",
     "gulp-mocha": "^2.2.0",
     "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.5",
     "http-server": "^0.8.5",
     "jasmine-core": "^2.4.1",
     "karma": "~0.13",

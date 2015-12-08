@@ -1,3 +1,5 @@
+'use strict';
+
 exports.SendDocumentIfFound = function(req, res, promise) {
 promise
   .then(function(data) {
