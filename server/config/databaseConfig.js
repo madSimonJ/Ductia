@@ -6,11 +6,11 @@ var Q = require('q');
 exports.connect = function(config) {
   MongoClient.connect(config.db, function(err, db) {
     if (!!err) {
-      console.log("error connecting to database:" + err);
+      console.log("error connecting to database: " + err);
     } else {
       databaseConnection = db;
       console.log("database connected");
-      if (!!config.reseedDBOnServerRestart) {
+      if (config.reseedDBOnServerRestart === true) {
         testDataSeeder.reseedDatabase(databaseConnection);
       }
     }
@@ -18,7 +18,6 @@ exports.connect = function(config) {
 }
 
 exports.DatabaseConnection = function() {
-  console.log("getting database connection.  dbconn = " + typeof databaseConnection.collection("exam"));
   if (!!databaseConnection) {
     return databaseConnection;
   } else {

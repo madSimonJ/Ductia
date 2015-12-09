@@ -1,3 +1,5 @@
+'use strict';
+
 var falcorExpress = require('falcor-express');
 var falcorModel = require('./falcorModel');
 var Router = require('falcor-router');

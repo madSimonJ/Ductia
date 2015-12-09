@@ -1,3 +1,5 @@
+'use strict';
+
 var falcor = require('falcor');
 var examRepository = require('../repositories/examRepository')
 

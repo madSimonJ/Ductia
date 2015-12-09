@@ -1,3 +1,5 @@
+'use strict';
+
 var db = require('../config/databaseConfig');
 var routeResponses = require('../routes/routeResponses');
 var Q = require('q');
