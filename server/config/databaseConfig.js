@@ -1,27 +1,44 @@
 var MongoClient = require('mongodb').MongoClient;
 var testDataSeeder = require('./testDataSeeder');
-var databaseConnection;
+var databaseConnection = undefined;
 var Q = require('q');
 
 exports.connect = function(config) {
-  MongoClient.connect(config.db, function(err, db) {
-    if (!!err) {
-      console.log("error connecting to database: " + err);
-    } else {
-      databaseConnection = db;
-      console.log("database connected");
-      if (config.reseedDBOnServerRestart === true) {
-        testDataSeeder.reseedDatabase(databaseConnection);
-      }
+
+  if (!!config) {
+    if(!!config.db) {
+      MongoClient.connect(config.db, function(err, db) {
+        if (!!err) {
+          console.log("error connecting to database: " + err);
+        } else {
+          databaseConnection = db;
+          console.log("database connected");
+          if (config.reseedDBOnServerRestart === true) {
+            testDataSeeder.reseedDatabase(databaseConnection);
+          }
+        }
+      });
     }
-  });
+    else {
+      throw new Error('The provided Configuration parameter object did not contain the required "db" property')
+    }
+  } else {
+    throw new Error("No configuration parameter object was provided");
+  }
+}
+
+exports.disconnect = function() {
+  if(!!databaseConnection) {
+    MongoClient.close();
+    databaseConnection = undefined;
+   }
 }
 
 exports.DatabaseConnection = function() {
   if (!!databaseConnection) {
     return databaseConnection;
   } else {
-    throw "the database is not connected";
+    throw new Error("the database is not connected");
   }
 }
 

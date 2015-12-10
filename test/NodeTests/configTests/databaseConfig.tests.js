@@ -13,13 +13,31 @@ var consoleLogSpy;
 
 var stubbedMongoDb = {
   MongoClient: {
-    connect: sandbox.stub()
+    connect: sandbox.stub(),
+    close: sandbox.stub()
   }
 };
 
-stubbedMongoDb.MongoClient.connect.withArgs(sinon.match('mongoDB connection string'), sinon.match.any).callsArgWith(1, undefined, {
-  connection: "success"
+var findOneStub = sandbox.stub();
+findOneStub.withArgs(sinon.match({
+  valid: true
+}), sinon.match.any).callsArgWith(1, undefined, {
+  valid: true
 });
+findOneStub.withArgs(sinon.match({
+  valid: false
+}), sinon.match.any).callsArgWith(1, "A nasty error occured", undefined);
+
+var stubbedMongoDbConnectionObject = {
+  connection: "success",
+  collection: function(collectionName) {
+    return {
+      findOne: findOneStub
+    };
+  }
+};
+
+stubbedMongoDb.MongoClient.connect.withArgs(sinon.match('mongoDB connection string'), sinon.match.any).callsArgWith(1, undefined, stubbedMongoDbConnectionObject);
 stubbedMongoDb.MongoClient.connect.withArgs(sinon.match('invalid connection string'), sinon.match.any).callsArgWith(1, "A nasty error occured", {});
 
 
@@ -55,13 +73,32 @@ describe('the databaseConfig module', function() {
   });
 
   afterEach(function() {
+    databaseConfigModule.disconnect();
     sandbox.verifyAndRestore();
+    stubbedMongoDb.MongoClient.connect.reset();
+    stubbedMongoDb.MongoClient.close.reset();
     mockery.deregisterAll();
   });
 
 
 
   describe('connect function', function() {
+
+    it('should throw an error if no Config parameter is passed in', function() {
+
+      (function() {
+        databaseConfigModule.connect();
+      }).should.throw('No configuration parameter object was provided');
+
+    });
+
+    it('should throw an error if a Config parameter is passed in that does not contain the "db" property', function() {
+
+      (function() {
+        databaseConfigModule.connect({});
+      }).should.throw('The provided Configuration parameter object did not contain the required "db" property');
+
+    });
 
     it('should call the MongoDB Client "connect" function', function() {
 
@@ -137,17 +174,104 @@ describe('the databaseConfig module', function() {
 
   });
 
+  describe('disconnect function', function() {
+
+    it('should call the MongoDb "close" function if the database has been connected to', function() {
+
+      databaseConfigModule.connect(testConfig);
+      databaseConfigModule.disconnect();
+
+      var mongoDbCloseFunctionWasCalled = stubbedMongoDb.MongoClient.close.called;
+
+      mongoDbCloseFunctionWasCalled.should.be.true;
+
+    });
+
+    it('should not call the MongoDb "close" function if the database has not been connected to', function() {
+
+      databaseConfigModule.disconnect();
+
+      var mongoDbCloseFunctionWasCalled = stubbedMongoDb.MongoClient.close.called;
+
+      mongoDbCloseFunctionWasCalled.should.be.false;
+    });
+
+    it('should cause the "DatabaseConnection()" function to thrown an error, because the database is no longer connected', function() {
+
+      databaseConfigModule.connect(testConfig);
+      databaseConfigModule.disconnect();
+
+      (function() {
+        databaseConfigModule.DatabaseConnection();
+      }).should.throw('the database is not connected');
+    });
+  });
 
   describe('DatabaseConnection function', function() {
+
+    it('should return an error if the DatabaseConnection is requested before a connection has been established', function() {
+
+      (function() {
+        databaseConfigModule.DatabaseConnection()
+      }).should.throw("the database is not connected");
+    });
+
+    it('should return the database connection object if a connection has been established', function() {
+
+      databaseConfigModule.connect(testConfig);
+
+      var dbConnectionObjectReceived = databaseConfigModule.DatabaseConnection();
+      var correctDbConnectionObjectWasReceived = dbConnectionObjectReceived.connection === "success";
+
+      correctDbConnectionObjectWasReceived.should.be.true;
+    });
 
   });
 
   describe('FindOne function', function() {
 
+    it('should call the MongoDB "findOne" function', function() {
+
+      databaseConfigModule.connect(testConfig);
+      databaseConfigModule.FindOne('collection', {
+        valid: true
+      });
+      findOneStub.should.be.calledOnce;
+
+    });
+
+    it('should return a promise that resolves to a data set if a valid query was passed in', function(done) {
+      databaseConfigModule.connect(testConfig);
+      databaseConfigModule.FindOne('collection', {
+          valid: true
+        })
+        .then(function(data) {
+          data.valid.should.be.true;
+          done();
+        })
+        .catch(function() {
+          throw new Error("fail");
+        });
+    });
+
+    it('should return a promise that fails if an invalid query is passed in', function(done) {
+      databaseConfigModule.connect(testConfig);
+      databaseConfigModule.FindOne('collection', {
+          valid: false
+        })
+        .then(function(data) {
+          throw new Error("fail");
+        })
+        .catch(function() {
+          true.should.be.true;
+          done();
+        });
+    });
+
   });
 
   describe('Find function', function() {
-    
+
   });
 
 });
