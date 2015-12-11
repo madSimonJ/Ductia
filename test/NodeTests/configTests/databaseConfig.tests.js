@@ -1,7 +1,6 @@
 'use strict';
 
 var chai = require('chai');
-var expect = chai.expect;
 var mockery = require('mockery');
 var sinon = require('sinon');
 var sandbox = sinon.sandbox.create();
