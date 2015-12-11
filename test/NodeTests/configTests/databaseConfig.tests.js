@@ -28,11 +28,29 @@ findOneStub.withArgs(sinon.match({
   valid: false
 }), sinon.match.any).callsArgWith(1, "A nasty error occured", undefined);
 
+var cursorEachMethod = function(callback) {
+  callback(undefined, {valid: true});
+  callback(undefined, {valid: true});
+  callback(undefined, undefined);
+}
+
+var cursorStub = {
+  each: sandbox.stub();
+};
+
+cursorStub.each.calls(cursorEachMethod);
+
+
+var findStub = sandbox.stub();
+findStub.calls(cursorStub);
+
+
 var stubbedMongoDbConnectionObject = {
   connection: "success",
   collection: function(collectionName) {
     return {
-      findOne: findOneStub
+      findOne: findOneStub,
+      find: findStub
     };
   }
 };
@@ -242,35 +260,84 @@ describe('the databaseConfig module', function() {
 
     it('should return a promise that resolves to a data set if a valid query was passed in', function(done) {
       databaseConfigModule.connect(testConfig);
-      databaseConfigModule.FindOne('collection', {
+      return databaseConfigModule.FindOne('collection', {
           valid: true
         })
         .then(function(data) {
           data.valid.should.be.true;
           done();
-        })
-        .catch(function() {
-          throw new Error("fail");
         });
     });
 
-    it('should return a promise that fails if an invalid query is passed in', function(done) {
+    it('should return a promise that fails if an invalid query is passed in', function() {
       databaseConfigModule.connect(testConfig);
-      databaseConfigModule.FindOne('collection', {
-          valid: false
-        })
-        .then(function(data) {
-          throw new Error("fail");
-        })
-        .catch(function() {
-          true.should.be.true;
-          done();
+      return databaseConfigModule.FindOne('collection', {valid: false})
+        .catch(function(err) {
+          err.message.should.equal("error getting record from database: A nasty error occured");
         });
+    });
+
+    it('should throw an error if no query is passed in as a paramter', function() {
+
+      databaseConfigModule.connect(testConfig);
+
+      (function() {
+        databaseConfigModule.FindOne('collection');
+      }).should.throw("No query was passed as a parameter");
+
+    });
+
+    it('should throw an error message if no parameters are passed in', function() {
+
+      databaseConfigModule.connect(testConfig);
+
+      (function() {
+        databaseConfigModule.FindOne();
+      }).should.throw("No parameters have been specified");
+
+    });
+
+    it("should throw an error message if a query is passed, but the collection name is undefined", function() {
+
+      databaseConfigModule.connect(testConfig);
+
+      (function() {
+        databaseConfigModule.FindOne(undefined, {valid: true})
+      }).should.throw("A query has been defined, but there is no collection name");
+
+    });
+
+    it("should throw an error message if the collection name provided is not a string", function() {
+
+      databaseConfigModule.connect(testConfig);
+
+      (function() {
+        databaseConfigModule.FindOne({value: "not a string"}, {valid: true});
+      }).should.throw("The collectionName parameter was not a valid String");
     });
 
   });
 
   describe('Find function', function() {
+
+    it('should call the MongoDb "Find" method', function() {
+      databaseConfigModule.connect(testConfig);
+      databaseConfigModule.Find('collection', {valid: true});
+
+      var mongoDbFindFunctionWasCalled = findStub.calledOnce;
+
+      mongoDbFindFunctionWasCalled.should.be.true;
+
+    });
+
+    it('should return a promise that resolves and returns data if the query parameters were valid', function() {
+      databaseConfigModule.connect(testConfig);
+      return databaseConfigModule.Find('collection', {valid: true})
+      .then(function(data) {
+        data.length.should.equal(2);
+      });
+
+    });
 
   });
 

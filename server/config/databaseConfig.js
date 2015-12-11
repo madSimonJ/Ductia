@@ -45,14 +45,23 @@ exports.DatabaseConnection = function() {
 exports.FindOne = function(collectionName, query) {
   var deferred = Q.defer();
 
+  if(!collectionName && !query) {
+    throw new Error("No parameters have been specified");
+  } else if(!!collectionName && !query) {
+    throw new Error("No query was passed as a parameter");
+  } else if(!collectionName && !!query) {
+    throw new Error("A query has been defined, but there is no collection name");
+  } else if(typeof collectionName !== "string") {
+    throw new Error("The collectionName parameter was not a valid String");
+  }
+
   databaseConnection.collection(collectionName).findOne(query, function(err, record) {
     if (!!err) {
-      deferred.reject("error getting record from database: " + err);
+      deferred.reject(new Error("error getting record from database: " + err));
     } else {
       deferred.resolve(record);
     }
   });
-  console.log("deferred.promise = " + deferred.promise);
   return deferred.promise;
 }
 
@@ -60,7 +69,6 @@ exports.FindOne = function(collectionName, query) {
 exports.Find = function(collectionName, query) {
   var deferred = Q.defer();
   var returnDocs = new Array();
-  console.log("query2 = " + JSON.stringify(query));
   var cursor = databaseConnection.collection(collectionName).find(query);
   cursor.each(function(err, doc) {
     if (!!err) {
