@@ -28,21 +28,24 @@ findOneStub.withArgs(sinon.match({
   valid: false
 }), sinon.match.any).callsArgWith(1, "A nasty error occured", undefined);
 
-var cursorEachMethod = function(callback) {
-  callback(undefined, {valid: true});
-  callback(undefined, {valid: true});
-  callback(undefined, undefined);
-}
+var findStub = sandbox.spy(function(query) {
+  var validDatacCursorStub = {
+    each: function(callback) {
+      callback(undefined, {valid: true});
+      callback(undefined, {valid: true});
+      callback(undefined, null);
+    }
+  };
 
-var cursorStub = {
-  each: sandbox.stub();
-};
+  var invalidDataCursorStub = {
+    each: function(callback) {
+      callback("A nasty error occured", null);
+    }
+  }
 
-cursorStub.each.calls(cursorEachMethod);
+  return query.valid ? validDatacCursorStub : invalidDataCursorStub;
+});
 
-
-var findStub = sandbox.stub();
-findStub.calls(cursorStub);
 
 
 var stubbedMongoDbConnectionObject = {
@@ -272,6 +275,9 @@ describe('the databaseConfig module', function() {
     it('should return a promise that fails if an invalid query is passed in', function() {
       databaseConfigModule.connect(testConfig);
       return databaseConfigModule.FindOne('collection', {valid: false})
+        .then(function(data) {
+          throw new Error("fail");
+        })
         .catch(function(err) {
           err.message.should.equal("error getting record from database: A nasty error occured");
         });
@@ -335,9 +341,55 @@ describe('the databaseConfig module', function() {
       return databaseConfigModule.Find('collection', {valid: true})
       .then(function(data) {
         data.length.should.equal(2);
+        data[0].valid.should.be.true;
+        data[1].valid.should.be.true;
       });
 
     });
+
+    it('should return a promise that fails if there is a problem reading the data', function() {
+      databaseConfigModule.connect(testConfig);
+      return databaseConfigModule.Find('collection', {valid: false})
+      .then(function(data) {
+        throw new Error("fail");
+      })
+      .catch(function(err) {
+        err.message.should.equal("error reading record: A nasty error occured");
+      });
+    });
+
+    it('Should raise an error if no query parameter is provided', function() {
+
+      databaseConfigModule.connect(testConfig);
+
+      (function() {databaseConfigModule.Find('collection');}).should.throw('No query was passed as a parameter');
+
+    });
+
+    it('Should raise an error if no parameters are provided', function() {
+
+      databaseConfigModule.connect(testConfig);
+
+      (function() {databaseConfigModule.Find();}).should.throw('No parameters have been specified');
+
+    });
+
+    it('Should raise an error if a query is provided, but the collectionName is undefined', function() {
+
+      databaseConfigModule.connect(testConfig);
+
+      (function() {databaseConfigModule.Find(undefined, {valid: true});}).should.throw('A query has been defined, but there is no collection name');
+
+    });
+
+    it('Should raise an error if the collectionName parameter is not a valid String', function() {
+
+      databaseConfigModule.connect(testConfig);
+
+      (function() {databaseConfigModule.Find({value: "not a string"}, {valid: true});}).should.throw('The collectionName parameter was not a valid String');
+
+    });
+
 
   });
 

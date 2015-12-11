@@ -6,7 +6,7 @@ var Q = require('q');
 exports.connect = function(config) {
 
   if (!!config) {
-    if(!!config.db) {
+    if (!!config.db) {
       MongoClient.connect(config.db, function(err, db) {
         if (!!err) {
           console.log("error connecting to database: " + err);
@@ -18,8 +18,7 @@ exports.connect = function(config) {
           }
         }
       });
-    }
-    else {
+    } else {
       throw new Error('The provided Configuration parameter object did not contain the required "db" property')
     }
   } else {
@@ -28,10 +27,10 @@ exports.connect = function(config) {
 }
 
 exports.disconnect = function() {
-  if(!!databaseConnection) {
+  if (!!databaseConnection) {
     MongoClient.close();
     databaseConnection = undefined;
-   }
+  }
 }
 
 exports.DatabaseConnection = function() {
@@ -43,17 +42,13 @@ exports.DatabaseConnection = function() {
 }
 
 exports.FindOne = function(collectionName, query) {
-  var deferred = Q.defer();
 
-  if(!collectionName && !query) {
-    throw new Error("No parameters have been specified");
-  } else if(!!collectionName && !query) {
-    throw new Error("No query was passed as a parameter");
-  } else if(!collectionName && !!query) {
-    throw new Error("A query has been defined, but there is no collection name");
-  } else if(typeof collectionName !== "string") {
-    throw new Error("The collectionName parameter was not a valid String");
+  var validationErrorMessage = validateQueryParameters(collectionName, query);
+  if (validationErrorMessage !== "") {
+    throw new Error(validationErrorMessage);
   }
+
+  var deferred = Q.defer();
 
   databaseConnection.collection(collectionName).findOne(query, function(err, record) {
     if (!!err) {
@@ -67,13 +62,18 @@ exports.FindOne = function(collectionName, query) {
 
 
 exports.Find = function(collectionName, query) {
+
+  var validationErrorMessage = validateQueryParameters(collectionName, query);
+  if (validationErrorMessage !== "") {
+    throw new Error(validationErrorMessage);
+  }
+
   var deferred = Q.defer();
   var returnDocs = new Array();
   var cursor = databaseConnection.collection(collectionName).find(query);
   cursor.each(function(err, doc) {
     if (!!err) {
-      console.log("error reading record: " + err);
-      deferred.reject("error reading record: " + err);
+      deferred.reject(new Error("error reading record: " + err));
     } else {
       if (doc !== null) {
         returnDocs.push(doc);
@@ -85,4 +85,20 @@ exports.Find = function(collectionName, query) {
   });
 
   return deferred.promise;
+}
+
+function validateQueryParameters(collectionName, query) {
+  var errorMessageReturnValue = '';
+
+  if (!collectionName && !query) {
+    errorMessageReturnValue = "No parameters have been specified";
+  } else if (!!collectionName && !query) {
+    errorMessageReturnValue = "No query was passed as a parameter";
+  } else if (!collectionName && !!query) {
+    errorMessageReturnValue = "A query has been defined, but there is no collection name";
+  } else if (typeof collectionName !== "string") {
+    errorMessageReturnValue = "The collectionName parameter was not a valid String";
+  }
+
+  return errorMessageReturnValue;
 }
