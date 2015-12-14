@@ -16,11 +16,10 @@ exports.getExamQuery = function(board, instrument, grade) {
   var query = assembleQuery(board, instrument,grade);
   db.FindOne(examCollectionName, query)
     .then(function(data) {
-
       deferred.resolve(data);
     })
     .catch(function(error) {
-      throw new Error("An error occured querying the database for exams: " + error.message);
+      deferred.reject(new Error("There was an error getting the requested Exam data: " + error.message));
     });
   return deferred.promise;
 }
