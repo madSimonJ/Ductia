@@ -6,7 +6,7 @@
   "repository": "",
   "license": "MIT",
   "devDependencies": {
-    "bower": "^1.7.0",
+    "bower": "^1.7.1",
     "chai": "^3.4.1",
     "grunt": "^0.4.5",
     "gulp": "^3.9.0",
@@ -48,7 +48,7 @@
     "falcor-express": "^0.1.2",
     "falcor-router": "^0.2.12",
     "jade": "^1.11.0",
-    "mongodb": "^2.0.49",
+    "mongodb": "^2.1.1",
     "morgan": "^1.6.1",
     "q": "^1.4.1",
     "stylus": "^0.52.4",

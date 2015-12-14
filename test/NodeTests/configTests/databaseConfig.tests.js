@@ -97,6 +97,7 @@ describe('the databaseConfig module', function() {
     sandbox.verifyAndRestore();
     stubbedMongoDb.MongoClient.connect.reset();
     stubbedMongoDb.MongoClient.close.reset();
+    sandbox.reset();
     mockery.deregisterAll();
   });
 
