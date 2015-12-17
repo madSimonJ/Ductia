@@ -9,8 +9,7 @@ var routeResponses = require('./routeResponses');
 exports.ConfigureApiRoutes = function(app) {
   app.get('/api', routeResponses.SendFileNotFoundResponse);
 
-  app.get('/api/exams', examRepository.getAllExams)
-  app.get('/api/exams/:board/:instrument?/:grade?', examRepository.getExam);
+  app.get('/api/exams/:board?/:instrument?/:grade?', examRepository.getExams);
 
   app.get('/api/books', bookRepository.getAllBooks);
   app.get('/api/books/:isbn', bookRepository.getBook);

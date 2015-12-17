@@ -6,15 +6,15 @@ var Q = require('q');
 
 var examCollectionName = 'exam';
 
-exports.getExam = function(req, res) {
-  var query = assembleQuery(req.params.board, req.params.instrument, parseInt(req.params.grade));
-  routeResponses.SendDocumentIfFound(req, res, db.Find(examCollectionName, query));
-}
+// exports.getExam = function(req, res) {
+//   var query = assembleQuery(req.params.board, req.params.instrument, parseInt(req.params.grade));
+//   routeResponses.SendDocumentIfFound(req, res, db.Find(examCollectionName, query));
+// }
 
-exports.getExamQuery = function(board, instrument, grade) {
+exports.getExams = function(board, instrument, grade) {
   var deferred = Q.defer();
   var query = assembleQuery(board, instrument,grade);
-  db.FindOne(examCollectionName, query)
+  db.Find(examCollectionName, query)
     .then(function(data) {
       deferred.resolve(data);
     })
@@ -22,12 +22,6 @@ exports.getExamQuery = function(board, instrument, grade) {
       deferred.reject(new Error("There was an error getting the requested Exam data: " + error.message));
     });
   return deferred.promise;
-}
-
-exports.getAllExams = function(req, res) {
-  var query = {};
-  console.log("get all exams");
-  routeResponses.SendDocumentIfFound(req, res, db.Find(examCollectionName, query));
 }
 
 function assembleQuery(board, instrument, grade) {
