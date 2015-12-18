@@ -51,12 +51,12 @@ describe('the examRepositoryModule', function() {
   describe('getExams function', function() {
 
     it('should call the dbConfigModule Find function once', function() {
-      examRepositoryModule.getExams("abrsm", "flute", 1);
+      examRepositoryModule.getExams({board: "abrsm", instrument: "flute", grade: 1});
       stubbedDatabaseConfigModule.Find.should.have.been.calledOnce;
     });
 
     it('should specify "exam" as the collection name when querying the database', function() {
-      examRepositoryModule.getExams("abrsm", "flute", 1);
+      examRepositoryModule.getExams({board: "abrsm", instrument: "flute", grade: 1});
       var callToTheDatabase = stubbedDatabaseConfigModule.Find.firstCall;
       var collectionNameQueryParameter = callToTheDatabase.args[0];
       collectionNameQueryParameter.should.equal('exam');
@@ -68,7 +68,20 @@ describe('the examRepositoryModule', function() {
         instrument: "flute",
         grade: 1
       };
-      examRepositoryModule.getExams("abrsm", "flute", 1);
+      examRepositoryModule.getExams({board: "abrsm", instrument: "flute", grade: 1});
+      var callToTheDatabase = stubbedDatabaseConfigModule.Find.firstCall;
+      var actualQuery = callToTheDatabase.args[1];
+      expectedQuery.should.eql(actualQuery);
+    });
+
+    it('should allow grade to be passed as an array', function() {
+      var expectedQuery = {
+        examBoard: "abrsm",
+        instrument: "flute",
+        grade: { $in: [1, 2, 3]}
+      }
+
+      examRepositoryModule.getExams({board: "abrsm", instrument: "flute", grade: [1, 2, 3]});
       var callToTheDatabase = stubbedDatabaseConfigModule.Find.firstCall;
       var actualQuery = callToTheDatabase.args[1];
       expectedQuery.should.eql(actualQuery);
@@ -79,7 +92,7 @@ describe('the examRepositoryModule', function() {
         instrument: "flute",
         grade: 1
       };
-      examRepositoryModule.getExams(undefined, "flute", 1);
+      examRepositoryModule.getExams({instrument: "flute", grade: 1});
       var callToTheDatabase = stubbedDatabaseConfigModule.Find.firstCall;
       var actualQuery = callToTheDatabase.args[1];
       expectedQuery.should.eql(actualQuery);
@@ -91,7 +104,7 @@ describe('the examRepositoryModule', function() {
         grade: 1
       }
 
-      examRepositoryModule.getExams("abrsm", undefined, 1);
+      examRepositoryModule.getExams({board: "abrsm", grade: 1});
       var callToTheDatabase = stubbedDatabaseConfigModule.Find.firstCall;
       var actualQuery = callToTheDatabase.args[1];
       expectedQuery.should.eql(actualQuery);
@@ -104,7 +117,7 @@ describe('the examRepositoryModule', function() {
         instrument: "flute"
       }
 
-      examRepositoryModule.getExams("abrsm", "flute");
+      examRepositoryModule.getExams({board: "abrsm", instrument: "flute"});
       var callToTheDatabase = stubbedDatabaseConfigModule.Find.firstCall;
       var actualQuery = callToTheDatabase.args[1];
       expectedQuery.should.eql(actualQuery);
@@ -116,7 +129,7 @@ describe('the examRepositoryModule', function() {
         examBoard: "abrsm"
       }
 
-      examRepositoryModule.getExams("abrsm");
+      examRepositoryModule.getExams({board: "abrsm"});
       var callToTheDatabase = stubbedDatabaseConfigModule.Find.firstCall;
       var actualQuery = callToTheDatabase.args[1];
       expectedQuery.should.eql(actualQuery);
@@ -127,7 +140,7 @@ describe('the examRepositoryModule', function() {
         instrument: "flute"
       }
 
-      examRepositoryModule.getExams(undefined, "flute");
+      examRepositoryModule.getExams({instrument: "flute"});
       var callToTheDatabase = stubbedDatabaseConfigModule.Find.firstCall;
       var actualQuery = callToTheDatabase.args[1];
       expectedQuery.should.eql(actualQuery);
@@ -138,7 +151,18 @@ describe('the examRepositoryModule', function() {
         grade: 1
       }
 
-      examRepositoryModule.getExams(undefined, undefined, 1);
+      examRepositoryModule.getExams({grade: 1});
+      var callToTheDatabase = stubbedDatabaseConfigModule.Find.firstCall;
+      var actualQuery = callToTheDatabase.args[1];
+      expectedQuery.should.eql(actualQuery);
+    });
+
+    it('should correctly assemble a query if only provided the grade as an array', function() {
+      var expectedQuery = {
+        grade: {$in: [1, 2, 3]}
+      };
+
+      examRepositoryModule.getExams({grade: [1, 2, 3]});
       var callToTheDatabase = stubbedDatabaseConfigModule.Find.firstCall;
       var actualQuery = callToTheDatabase.args[1];
       expectedQuery.should.eql(actualQuery);
@@ -156,7 +180,7 @@ describe('the examRepositoryModule', function() {
 
     it('should return the data from the database in a promise', function() {
 
-      return examRepositoryModule.getExams("abrsm", "flute", 1)
+      return examRepositoryModule.getExams({board: "abrsm", instrument: "flute", grade: 1})
         .then(function(data) {
           data.should.eql({
             valid: true
@@ -169,7 +193,7 @@ describe('the examRepositoryModule', function() {
 
     it("should return a failing promise if there is an issue getting data from the database", function() {
 
-      return examRepositoryModule.getExams("value that will cause a failure", "flute", 1)
+      return examRepositoryModule.getExams({board: "value that will cause a failure", instrument: "flute", grade: 1})
         .then(function(data) {
           throw new Error("fail");
         })
@@ -181,24 +205,32 @@ describe('the examRepositoryModule', function() {
     it("should throw an error if an examBoard parameter is passed that isn't a string", function() {
 
       (function() {
-        examRepositoryModule.getExams({examBoard: "abrsm"}, "flute", 1);
-      }).should.throw.error("the examBoard provided was not a valid string");
+        examRepositoryModule.getExams({board: {value: "abrsm"}, instrument: "flute", grade: 1});
+      }).should.throw("the Exam Board provided was not a valid string");
 
     });
 
     it("should throw an error if an instrument parameter is passed that isn't a string", function() {
 
       (function() {
-        examRepositoryModule.getExams("abrsm", {instrument: "flute"}, 1);
-      }).should.throw.error("the grade provided was not a valid string");
+        examRepositoryModule.getExams({board: "abrsm", instrument: {value: "flute"}, grade: 1});
+      }).should.throw("the instrument provided was not a valid string");
 
     });
 
     it("should throw an error if a grade parameter is passed that isn't an integer", function() {
 
       (function() {
-        examRepositoryModule.getExams("abrsm", "flute", "1");
-      }).should.throw.error("the grade provided was not a valid integer");
+        examRepositoryModule.getExams({board: "abrsm", instrument: "flute", grade: "one"});
+      }).should.throw("the grade provided was not a valid integer");
+
+    });
+
+    it("should throw an error if a grade parameter is passed that isn't an integer", function() {
+
+      (function() {
+        examRepository.getExams({board: "abrsm", instrument: "flute", grade: [1, 2, "three"]});
+      }).should.throw("one or more of the grades provided was not a valid integer");
 
     });
 

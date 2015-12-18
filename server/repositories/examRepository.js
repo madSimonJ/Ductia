@@ -11,7 +11,24 @@ var examCollectionName = 'exam';
 //   routeResponses.SendDocumentIfFound(req, res, db.Find(examCollectionName, query));
 // }
 
-exports.getExams = function(board, instrument, grade) {
+exports.getExams = function(searchParameters) {
+
+  if(!searchParameters) {
+    searchParameters = {};
+  }
+
+  var board = searchParameters.board;
+  var instrument = searchParameters.instrument;
+  var grade = searchParameters.grade;
+  if(!!board && typeof board !== "string") {
+    throw new Error("the Exam Board provided was not a valid string");
+  } else if(!!instrument && typeof instrument !== "string") {
+    throw new Error("the instrument provided was not a valid string");
+  } else if(!!grade && isNaN(grade) && !Array.isArray(grade)) {
+    throw new Error("the grade provided was not a valid integer");
+  }
+
+
   var deferred = Q.defer();
   var query = assembleQuery(board, instrument,grade);
   db.Find(examCollectionName, query)
@@ -35,8 +52,13 @@ function assembleQuery(board, instrument, grade) {
     query.instrument = instrument.toLowerCase();
   }
 
-  if ((!!grade) && (grade !== NaN)) {
-    query.grade = grade;
+  if (!!grade) {
+    if(Array.isArray(grade)) {
+      query.grade = {$in: grade};
+    } else if (!isNaN(grade)) {
+      query.grade = grade;
+    }
+
   }
 
   return query;
