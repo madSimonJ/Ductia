@@ -37,6 +37,7 @@ describe('the examRepositoryModule', function() {
     mockery.registerMock('../config/databaseConfig', stubbedDatabaseConfigModule);
     mockery.registerMock('../routes/routeResponses', stubbedRouteResponsesModule);
     mockery.registerAllowable('q');
+    mockery.registerAllowable('underscore');
     mockery.registerAllowable('../../../server/repositories/examRepository', true);
     examRepositoryModule = require('../../../server/repositories/examRepository');
   });
@@ -229,7 +230,7 @@ describe('the examRepositoryModule', function() {
     it("should throw an error if a grade parameter is passed that isn't an integer", function() {
 
       (function() {
-        examRepository.getExams({board: "abrsm", instrument: "flute", grade: [1, 2, "three"]});
+        examRepositoryModule.getExams({board: "abrsm", instrument: "flute", grade: [1, 2, "three"]});
       }).should.throw("one or more of the grades provided was not a valid integer");
 
     });

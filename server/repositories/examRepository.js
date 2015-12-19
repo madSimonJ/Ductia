@@ -3,29 +3,31 @@
 var db = require('../config/databaseConfig');
 var routeResponses = require('../routes/routeResponses');
 var Q = require('q');
+var _ = require('underscore');
 
 var examCollectionName = 'exam';
-
-// exports.getExam = function(req, res) {
-//   var query = assembleQuery(req.params.board, req.params.instrument, parseInt(req.params.grade));
-//   routeResponses.SendDocumentIfFound(req, res, db.Find(examCollectionName, query));
-// }
 
 exports.getExams = function(searchParameters) {
 
   if(!searchParameters) {
     searchParameters = {};
   }
-
   var board = searchParameters.board;
   var instrument = searchParameters.instrument;
   var grade = searchParameters.grade;
+
   if(!!board && typeof board !== "string") {
     throw new Error("the Exam Board provided was not a valid string");
   } else if(!!instrument && typeof instrument !== "string") {
     throw new Error("the instrument provided was not a valid string");
   } else if(!!grade && isNaN(grade) && !Array.isArray(grade)) {
     throw new Error("the grade provided was not a valid integer");
+  } else if(!!grade && Array.isArray(grade)) {
+    _.each(grade, function(g) {
+      if(isNaN(g)) {
+        throw new Error("one or more of the grades provided was not a valid integer");
+      }
+    });
   }
 
 
