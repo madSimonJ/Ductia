@@ -30,7 +30,7 @@ var stubbedRouteResponsesModule = {
 
 var examControllerModule;
 
-describe('the examRepository Module', function() {
+describe('the examController Module', function() {
 
   before(function() {
     mockery.enable();
