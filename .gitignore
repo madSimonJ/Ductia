@@ -1,3 +1,4 @@
 node_modules/
 public/bower_components/html5-boilerplate/src/index.html
 public/bower_components/
+unit-test-coverage/

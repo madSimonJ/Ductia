@@ -2,6 +2,7 @@
 
 var routeResponses = require('./routeResponses');
 var path = require('path');
+
 var websiteRootDirectory = path.join(__dirname, '../../');
 var publicDirectory = path.join(websiteRootDirectory, 'public');
 var angularAppDirectory = path.join(publicDirectory, 'app');
