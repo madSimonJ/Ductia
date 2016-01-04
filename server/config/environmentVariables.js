@@ -1,6 +1,5 @@
 var path = require('path');
 var rootPath = path.normalize(__dirname + '/../../');
-console.log('port =' + process.env.PORT);
 module.exports = {
   development:{
     rootPath: rootPath,
