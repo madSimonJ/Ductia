@@ -2,15 +2,34 @@
 
 var db = require('../config/databaseConfig');
 var routeResponses = require('../routes/routeResponses');
+var q = require('q');
 
 var bookCollectionName = 'book';
 
-exports.getBook = function(req, res) {
+// exports.thisWorks = "true";
+//
+// exports.getExams = function(searchParameters) {
+//   return true;
+// }
 
-  var isbn = req.params.isbn;
-  var query = {_id: isbn};
+exports.getBook = function(isbn) {
 
-  routeResponses.SendDocumentIfFound(req, res, db.FindOne(bookCollectionName, query));
+
+  var deferred = q.defer();
+  var query = assembleQuery(isbn);
+  db.Find(bookCollectionName, query)
+    .then(function(data) {
+      deferred.resolve(data);
+    })
+    .catch(function(error) {
+      deferred.reject(new Error("There was an error getting the requested Exam data: " + error.message));
+    });
+}
+
+function assembleQuery(isbn) {
+  var returnValue = {};
+
+  returnValue._id = isbn;
 }
 
 exports.getAllBooks = function(req, res) {

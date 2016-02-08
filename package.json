@@ -6,8 +6,8 @@
   "repository": "",
   "license": "MIT",
   "devDependencies": {
-    "bower": "^1.7.4",
-    "chai": "^3.4.1",
+    "bower": "^1.7.7",
+    "chai": "^3.5.0",
     "gulp": "^3.9.0",
     "gulp-istanbul": "^0.10.3",
     "gulp-mocha": "^2.2.0",
@@ -16,10 +16,10 @@
     "gulp-watch": "^4.3.5",
     "http-server": "^0.8.5",
     "istanbul": "^0.4.2",
-    "mocha": "^2.3.4",
+    "mocha": "^2.3.5",
     "mockery": "^1.4.0",
-    "shelljs": "^0.5.3",
-    "sinon": "^1.17.2"
+    "shelljs": "^0.6.0",
+    "sinon": "^1.17.3"
   },
   "scripts": {
     "postinstall": "bower install",
@@ -37,11 +37,11 @@
     "cookie-parser": "^1.4.1",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
-    "falcor": "^0.1.15",
+    "falcor": "^0.1.16",
     "falcor-express": "^0.1.2",
     "falcor-router": "^0.2.12",
     "jade": "^1.11.0",
-    "mongodb": "^2.1.4",
+    "mongodb": "^2.1.6",
     "morgan": "^1.6.1",
     "q": "^1.4.1",
     "stylus": "^0.53.0",
