@@ -8,8 +8,8 @@ var sandbox = sinon.sandbox.create();
 var should = chai.should();
 
 var FindStub = sandbox.stub();
-FindStub.withArgs(sinon.match("book"), sinon.match.has("_id", "9781848494923")).returns(q.resolve({valid: true}));
-FindStub.withArgs(sinon.match("book"), sinon.match.any).returns(q.reject(new Error("A nasty error occured.")));
+FindStub.withArgs(sinon.match("piece"), sinon.match.has("_id", "piece39")).returns(q.resolve({valid: true}));
+FindStub.withArgs(sinon.match("piece"), sinon.match.any).returns(q.reject(new Error("A nasty error occured.")));
 
 var stubbedDatabaseConfigModule = {
   Find: FindStub
@@ -19,17 +19,17 @@ var stubbedRouteResponsesModule = {
   SendDocumentIfFound: sandbox.stub()
 };
 
-var bookRepositoryModule;
+var pieceRepositoryModule;
 
-describe('the bookRepository module', function() {
+describe('the pieceRepository module', function() {
 
   before(function() {
     mockery.enable();
     mockery.registerMock('../config/databaseConfig', stubbedDatabaseConfigModule);
     mockery.registerMock('../routes/routeResponses', stubbedRouteResponsesModule);
     mockery.registerAllowable('q');
-    mockery.registerAllowable('../../../server/repositories/bookRepository', true);
-    bookRepositoryModule = require('../../../server/repositories/bookRepository');
+    mockery.registerAllowable('../../../server/repositories/pieceRepository', true);
+    pieceRepositoryModule = require('../../../server/repositories/pieceRepository');
   });
 
   after(function() {
@@ -43,16 +43,16 @@ describe('the bookRepository module', function() {
 
     describe('getExams function', function() {
 
-    describe('given a valid isbn', function() {
+    describe('given a valid piece id', function() {
 
-      var expectedQuery = {_id: '9781848494923'};
-      var validIsbn = "9781848494923";
-      var getBookResults;
+      var expectedQuery = {_id: 'piece39'};
+      var validPieceId = 'piece39';
+      var getPieceResults;
       var dbFindFunctionStub;
       var firstCallToFindFunction;
 
       before(function() {
-        getBookResults = bookRepositoryModule.getBook({isbn: validIsbn});
+        getPieceResults = pieceRepositoryModule.getPiece({pieceid: validPieceId});
         dbFindFunctionStub = stubbedDatabaseConfigModule.Find;
         firstCallToFindFunction = dbFindFunctionStub.firstCall;
       });
@@ -66,8 +66,8 @@ describe('the bookRepository module', function() {
         dbFindFunctionStub.callCount.should.equal(1);
       });
 
-      it('should make a call to the "book" collection', function() {
-        firstCallToFindFunction.args[0].should.equal('book');
+      it('should make a call to the "piece" collection', function() {
+        firstCallToFindFunction.args[0].should.equal('piece');
       });
 
       it('should create the expected query to pass to the dbConfigMoudule', function() {
@@ -78,12 +78,12 @@ describe('the bookRepository module', function() {
     describe('given a request containing no search parametsrs', function() {
 
       var expectedQuery = {};
-      var getBookResults;
+      var getPieceResults;
       var dbFindFunctionStub;
       var firstCallToFindFunction;
 
       before(function() {
-        getBookResults = bookRepositoryModule.getBook();
+        getPieceResults = pieceRepositoryModule.getPiece();
         dbFindFunctionStub = stubbedDatabaseConfigModule.Find;
         firstCallToFindFunction = dbFindFunctionStub.firstCall;
       });
@@ -94,15 +94,15 @@ describe('the bookRepository module', function() {
 
     });
 
-    describe('given a request containing a non-string value of isbn', function() {
+    describe('given a request containing a non-string value of pieceid', function() {
 
-      var queryContainingNonStringValue = {isbn: 12345};
+      var queryContainingNonStringValue = {pieceid: 12345};
 
       it('should throw an error rejecting the parameter as invalid', function() {
 
         (function() {
-          bookRepositoryModule.getBook(queryContainingNonStringValue);
-        }).should.throw('The ISBN number provided was not a valid string');
+          pieceRepositoryModule.getPiece(queryContainingNonStringValue);
+        }).should.throw('The Piece Id provided was not a valid string');
 
       });
 
@@ -113,12 +113,12 @@ describe('the bookRepository module', function() {
       var queryContainingErrorInducingData = {isbn: "12345"};
 
       it('should throw an error rejecting the parameter as invalid', function() {
-          return bookRepositoryModule.getBook(queryContainingErrorInducingData)
+          return pieceRepositoryModule.getPiece(queryContainingErrorInducingData)
           .then(function(data) {
             throw new Error("fail");
           })
           .catch(function(error) {
-            error.message.should.equal("There was an error getting the requested Exam data: A nasty error occured.");
+            error.message.should.equal("There was an error getting the requested Piece data: A nasty error occured.");
           });
         });
       });
