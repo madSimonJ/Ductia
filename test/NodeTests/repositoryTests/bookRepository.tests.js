@@ -52,7 +52,7 @@ describe('the bookRepository module', function() {
       var firstCallToFindFunction;
 
       before(function() {
-        getBookResults = bookRepositoryModule.getBook({isbn: validIsbn});
+        getBookResults = bookRepositoryModule.getBooks({isbn: validIsbn});
         dbFindFunctionStub = stubbedDatabaseConfigModule.Find;
         firstCallToFindFunction = dbFindFunctionStub.firstCall;
       });
@@ -83,7 +83,7 @@ describe('the bookRepository module', function() {
       var firstCallToFindFunction;
 
       before(function() {
-        getBookResults = bookRepositoryModule.getBook();
+        getBookResults = bookRepositoryModule.getBooks();
         dbFindFunctionStub = stubbedDatabaseConfigModule.Find;
         firstCallToFindFunction = dbFindFunctionStub.firstCall;
       });
@@ -101,7 +101,7 @@ describe('the bookRepository module', function() {
       it('should throw an error rejecting the parameter as invalid', function() {
 
         (function() {
-          bookRepositoryModule.getBook(queryContainingNonStringValue);
+          bookRepositoryModule.getBooks(queryContainingNonStringValue);
         }).should.throw('The ISBN number provided was not a valid string');
 
       });
@@ -113,7 +113,7 @@ describe('the bookRepository module', function() {
       var queryContainingErrorInducingData = {isbn: "12345"};
 
       it('should throw an error rejecting the parameter as invalid', function() {
-          return bookRepositoryModule.getBook(queryContainingErrorInducingData)
+          return bookRepositoryModule.getBooks(queryContainingErrorInducingData)
           .then(function(data) {
             throw new Error("fail");
           })

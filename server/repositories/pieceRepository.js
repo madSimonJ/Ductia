@@ -6,7 +6,7 @@ var q = require('q');
 
 var pieceCollectionName = 'piece';
 
-exports.getPiece = function(searchParameters) {
+exports.getPieces = function(searchParameters) {
 
   if((!!searchParameters) && (!!searchParameters.pieceid) && (typeof searchParameters.pieceid !== "string")) {
     throw new Error('The Piece Id provided was not a valid string');

@@ -7,13 +7,13 @@ var sandbox = sinon.sandbox.create();
 
 var should = chai.should();
 
-var stubbedBookRepositoryModule = {
-  getBooks: sandbox.stub()
+var stubbedPieceRepositoryModule = {
+  getPieces: sandbox.stub()
 };
 
 var mockReq = {
   name: 'req',
-  params:   {isbn: '9781848494923'}
+  params: {pieceid: 'piece39'}
 };
 
 var mockRes = {
@@ -24,17 +24,18 @@ var stubbedRouteResponsesModule = {
   SendDocumentIfFound: sandbox.stub()
 }
 
-var bookControllerModule;
+var pieceControllerModule;
 
-describe('the bookController Module', function() {
+describe('the pieceController Module', function() {
 
   before(function() {
     mockery.enable();
-    mockery.registerMock('../repositories/bookRepository', stubbedBookRepositoryModule);
+    mockery.registerMock('../repositories/pieceRepository', stubbedPieceRepositoryModule);
     mockery.registerMock('../routes/routeResponses', stubbedRouteResponsesModule);
-    mockery.registerAllowable('../../../server/controllers/bookController', true);
-    bookControllerModule = require('../../../server/controllers/bookController');
-    bookControllerModule.handleBookGetRequest(mockReq, mockRes);
+    mockery.registerAllowable('../../../server/controllers/pieceController', true);
+    pieceControllerModule = require('../../../server/controllers/pieceController');
+    console.log('mockreq = ' + JSON.stringify(mockReq));
+    pieceControllerModule.handlePieceGetRequest(mockReq, mockRes);
   });
 
   after(function() {
@@ -46,7 +47,7 @@ describe('the bookController Module', function() {
     sandbox.verifyAndRestore();
   });
 
-  describe("handleBookGetRequest function", function() {
+  describe("handlePieceGetRequest function", function() {
 
     it("should forward the http Request object on to the RouteResponses module", function() {
       var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
@@ -61,14 +62,14 @@ describe('the bookController Module', function() {
       routeResponseResParameter.name.should.equal("res");
     });
 
-    it('should call the bookRepository getBooks function', function() {
-      stubbedBookRepositoryModule.getBooks.callCount.should.equal(1);
+    it('should call the bookRepository getPieces function', function() {
+      stubbedPieceRepositoryModule.getPieces.callCount.should.equal(1);
     });
 
-    it('should pass the "isbn" req parameter to the bookRepository getBooks function', function() {
-      var callTobookRepositoryModule = stubbedBookRepositoryModule.getBooks.firstCall;
-      var getExamQueryParamter = callTobookRepositoryModule.args[0];
-      getExamQueryParamter.isbn.should.equal('9781848494923');
+    it('should pass the "pieceid" req parameter to the pieceRepository getPieces function', function() {
+      var callToPieceRepositoryModule = stubbedPieceRepositoryModule.getPieces.firstCall;
+      var getPieceQueryParamter = callToPieceRepositoryModule.args[0];
+      getPieceQueryParamter.pieceid.should.equal('piece39');
     });
 
   });

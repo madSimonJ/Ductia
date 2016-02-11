@@ -6,7 +6,7 @@ var q = require('q');
 
 var bookCollectionName = 'book';
 
-exports.getBook = function(searchParameters) {
+exports.getBooks = function(searchParameters) {
 
   if((!!searchParameters) && (!!searchParameters.isbn) && (typeof searchParameters.isbn !== "string")) {
     throw new Error('The ISBN number provided was not a valid string');

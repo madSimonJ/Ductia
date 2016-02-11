@@ -52,7 +52,7 @@ describe('the pieceRepository module', function() {
       var firstCallToFindFunction;
 
       before(function() {
-        getPieceResults = pieceRepositoryModule.getPiece({pieceid: validPieceId});
+        getPieceResults = pieceRepositoryModule.getPieces({pieceid: validPieceId});
         dbFindFunctionStub = stubbedDatabaseConfigModule.Find;
         firstCallToFindFunction = dbFindFunctionStub.firstCall;
       });
@@ -83,7 +83,7 @@ describe('the pieceRepository module', function() {
       var firstCallToFindFunction;
 
       before(function() {
-        getPieceResults = pieceRepositoryModule.getPiece();
+        getPieceResults = pieceRepositoryModule.getPieces();
         dbFindFunctionStub = stubbedDatabaseConfigModule.Find;
         firstCallToFindFunction = dbFindFunctionStub.firstCall;
       });
@@ -101,7 +101,7 @@ describe('the pieceRepository module', function() {
       it('should throw an error rejecting the parameter as invalid', function() {
 
         (function() {
-          pieceRepositoryModule.getPiece(queryContainingNonStringValue);
+          pieceRepositoryModule.getPieces(queryContainingNonStringValue);
         }).should.throw('The Piece Id provided was not a valid string');
 
       });
@@ -113,7 +113,7 @@ describe('the pieceRepository module', function() {
       var queryContainingErrorInducingData = {isbn: "12345"};
 
       it('should throw an error rejecting the parameter as invalid', function() {
-          return pieceRepositoryModule.getPiece(queryContainingErrorInducingData)
+          return pieceRepositoryModule.getPieces(queryContainingErrorInducingData)
           .then(function(data) {
             throw new Error("fail");
           })
