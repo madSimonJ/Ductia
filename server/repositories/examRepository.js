@@ -57,10 +57,9 @@ function assembleQuery(board, instrument, grade) {
   if (!!grade) {
     if(Array.isArray(grade)) {
       query.grade = {$in: grade};
-    } else if (!isNaN(grade)) {
+    } else {
       query.grade = grade;
     }
-
   }
 
   return query;
