@@ -2,7 +2,6 @@ angular.module('ductia').controller('pieceCtrl', function($scope, $routeParams, 
   $scope.Piece = {title: 'piece not found'}
   $scope.Pieces = [];
 
-    console.log("calling Falcor");
 
   if(!!$routeParams.pieceId) {
 

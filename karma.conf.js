@@ -10,34 +10,50 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'chai-sinon'],
+    frameworks: ['mocha', 'chai', 'sinon'],
 
 
     // list of files / patterns to load in the browser
-    files: [
-      'public/bower_components/angular/angular.js',
-      'public/bower_components/angular-resource/angular-resource.js',
-      'public/bower_components/angular-mocks/angular-mocks.js',
-      {pattern: 'public/app/**/*.js', included: false},
-      {pattern: 'test/AngularTests/**/*.js', included: false}
-    ],
+    files: [{
+      pattern: 'public/bower_components/angular/angular.js',
+      included: true,
+      watched: false
+    }, {
+      pattern: 'public/bower_components/angular-route/angular-route.js',
+      included: true,
+      watched: false
+    },, {
+      pattern: 'public/bower_components/angular-resource/angular-resource.js',
+      included: true,
+      watched: false
+    }, {
+      pattern: 'public/bower_components/angular-mocks/angular-mocks.js',
+      included: true,
+      watched: false
+    }, {
+      pattern: 'public/app/**/*.js',
+      included: true,
+      watched: true
+    }, {
+      pattern: 'test/AngularTests/**/*test.js',
+      included: true,
+      watched: true
+    }],
 
 
     // list of files to exclude
-    exclude: [
-    ],
+    exclude: [],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-    },
+    preprocessors: {},
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['dots', 'progress'],
+    reporters: ['dots'],
 
 
     // web server port
@@ -60,7 +76,7 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     //browsers: ['Chrome', 'Firefox', 'PhantomJS', 'IE'],
-    browsers: ['Firefox'],
+    browsers: ['Chrome'],
 
 
     // Continuous Integration mode

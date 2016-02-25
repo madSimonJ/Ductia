@@ -5,20 +5,6 @@ angular.module('ductia').controller('examCtrl', function($scope, examFactory, $r
   var queryParameters = {};
 
   if(!!$scope.SelectedBoard) {
-
-
-
-    var model = new falcor.Model({source: new falcor.HttpDataSource('/model.json') });
-
-    model.
-      get(
-        'exams["' + $routeParams.board + '"].["instrument", "grade","dateValidTo","examBoard"]',
-        'exams["' + $routeParams.board + '"].["lists"]["A"][1..10].["title", "composer"]'
-      ).
-      then(function(response) {
-        alert(JSON.stringify(response,null,3));
-      });
-
     queryParameters.board = $scope.SelectedBoard;
   }
 
