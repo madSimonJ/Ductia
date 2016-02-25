@@ -2,19 +2,8 @@ angular.module('ductia').controller('pieceCtrl', function($scope, $routeParams, 
   $scope.Piece = {title: 'piece not found'}
   $scope.Pieces = [];
 
-
   if(!!$routeParams.pieceId) {
-
-    var model = new falcor.Model({source: new falcor.HttpDataSource('/model.json') });
-
-    model.
-      get('pieces["' + $routeParams.pieceId + '"].["title", "composer"]').
-      then(function(response) {
-          var pId = $routeParams.pieceId;
-          $scope.$apply(function() {
-            $scope.Piece = response.json.pieces[pId];
-          });
-      });
+    $scope.Piece = pieceFactory.get({pieceId: $routeParams.pieceId});
   } else {
     $scope.Pieces = pieceFactory.query({});
   }

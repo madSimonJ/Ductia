@@ -11,8 +11,11 @@ angular.module('ductia').controller('examCtrl', function($scope, examFactory, $r
   if (!!$scope.SelectedInstrument) {
     queryParameters.instrument = $scope.SelectedInstrument;
   }
+
   if(!!$scope.SelectedGrade) {
     queryParameters.grade = $scope.SelectedGrade;
   }
+
   $scope.Exams = examFactory.query(queryParameters);
+  
 });
