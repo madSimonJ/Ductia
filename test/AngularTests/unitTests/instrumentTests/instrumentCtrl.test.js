@@ -47,7 +47,7 @@ describe('the instrument control', function() {
   });
 
   it('should insert the expected instrument list to the scope', function() {
-    mockScope.Instruments.should.equal(expectedInstrumentList);
+    mockScope.Instruments.should.eql(expectedInstrumentList);
   });
 
 });
