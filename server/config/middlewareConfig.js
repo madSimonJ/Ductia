@@ -2,7 +2,6 @@ var express = require('express');
 var stylus = require('stylus');
 var morgan = require('morgan');
 var bodyParser = require("body-parser");
-var falcorRoutes = require("../falcor/falcorRoutes");
 //var passport = require('passport');
 //var cookieParser = require('cookie-parser');
 var session = require("express-session");
@@ -28,7 +27,4 @@ module.exports = function(app, config) {
   }));
   app.use(bodyParser.json());
   //  app.use(express.static(config.rootPath + '/public'));
-
-  app.use('/falcor_router.json', falcorRoutes.GetRouter());
-  app.use('/falcor_model.json', falcorRoutes.GetDataSourceRoute());
 }

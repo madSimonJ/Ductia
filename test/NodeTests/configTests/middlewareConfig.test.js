@@ -169,18 +169,4 @@ describe('the middlewareConfig module', function() {
     stubbedBodyParserModule.json.should.be.calledOnce;
   });
 
-  it('should configure a Falcor Router as a Middleware', function() {
-    var callToAppUse = stubbedAppParameter.use.getCall(4);
-    callToAppUse.args[0].should.equal('/falcor_router.json');
-    callToAppUse.args[1].should.equal('GetRouter');
-    stubbedFalcorRoutesModule.GetRouter.should.be.calledOnce;
-  });
-
-  it('should configure a Falcor Model as a Middleware', function() {
-    var callToAppUse = stubbedAppParameter.use.getCall(5);
-    callToAppUse.args[0].should.equal('/falcor_model.json');
-    callToAppUse.args[1].should.equal('GetDataSourceRoute');
-    stubbedFalcorRoutesModule.GetDataSourceRoute.should.be.calledOnce;
-  });
-
 });
