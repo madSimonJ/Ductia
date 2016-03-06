@@ -16,8 +16,7 @@ var jsFileStaticContentRoutes = {
   'angular.js': path.join(bowerComponentsDirectory, 'angular', 'angular.js'),
   'angular-resource.js': path.join(bowerComponentsDirectory, 'angular-resource', 'angular-resource.js'),
   'angular-route.js': path.join(bowerComponentsDirectory, 'angular-route', 'angular-route.js'),
-  'toastr.js': path.join(bowerComponentsDirectory, 'toastr', 'toastr.js'),
-  'falcor.browser.js': path.join(nodeModulesDirectory, 'falcor', 'dist', 'falcor.browser.js')
+  'toastr.js': path.join(bowerComponentsDirectory, 'toastr', 'toastr.js')
 }
 var cssFileStaticContentRoutes = {
   'html5boilerplate-normalize.css': path.join(bowerComponentsDirectory, "html5-boilerplate", "dist", "css", "normalize.css"),

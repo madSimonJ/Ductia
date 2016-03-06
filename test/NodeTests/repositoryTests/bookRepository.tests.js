@@ -7,8 +7,15 @@ var q = require('q');
 var sandbox = sinon.sandbox.create();
 var should = chai.should();
 
+var validBookRecord = [{
+  _id: '9780193571815'
+}];
+
 var FindStub = sandbox.stub();
-FindStub.withArgs(sinon.match("book"), sinon.match.has("_id", "9781848494923")).returns(q.resolve({valid: true}));
+FindStub.withArgs(sinon.match("book"), sinon.match.has("_id", "9781848494923")).returns(q.resolve({
+  valid: true
+}));
+FindStub.withArgs(sinon.match("book"), sinon.match.has("_id", "9780193571815")).returns(q.resolve(validBookRecord));
 FindStub.withArgs(sinon.match("book"), sinon.match.any).returns(q.reject(new Error("A nasty error occured.")));
 
 var stubbedDatabaseConfigModule = {
@@ -41,18 +48,44 @@ describe('the bookRepository module', function() {
     sandbox.verifyAndRestore();
   });
 
-    describe('getExams function', function() {
+  describe('getExams function', function() {
+
+    describe('given a query that will return a single result', function() {
+      var dbFindFunctionStub, firstCallToFindFunction;
+      before(function() {
+        dbFindFunctionStub = stubbedDatabaseConfigModule.Find;
+        firstCallToFindFunction = dbFindFunctionStub.firstCall;
+      });
+
+      after(function() {
+        sandbox.reset();
+        stubbedDatabaseConfigModule.Find.reset();
+      });
+
+      it('should return a single object, not an array', function() {
+        return bookRepositoryModule.getBooks({
+          isbn: '9780193571815'
+        }).then(function(dataReturnedFromDatabase) {
+          dataReturnedFromDatabase.should.eql(validBookRecord[0]);
+        });
+      });
+
+    });
 
     describe('given a valid isbn', function() {
 
-      var expectedQuery = {_id: '9781848494923'};
+      var expectedQuery = {
+        _id: '9781848494923'
+      };
       var validIsbn = "9781848494923";
       var getBookResults;
       var dbFindFunctionStub;
       var firstCallToFindFunction;
 
       before(function() {
-        getBookResults = bookRepositoryModule.getBooks({isbn: validIsbn});
+        getBookResults = bookRepositoryModule.getBooks({
+          isbn: validIsbn
+        });
         dbFindFunctionStub = stubbedDatabaseConfigModule.Find;
         firstCallToFindFunction = dbFindFunctionStub.firstCall;
       });
@@ -96,7 +129,9 @@ describe('the bookRepository module', function() {
 
     describe('given a request containing a non-string value of isbn', function() {
 
-      var queryContainingNonStringValue = {isbn: 12345};
+      var queryContainingNonStringValue = {
+        isbn: 12345
+      };
 
       it('should throw an error rejecting the parameter as invalid', function() {
 
@@ -110,17 +145,19 @@ describe('the bookRepository module', function() {
 
     describe('given a request containing a query that would cause an error in the database', function() {
 
-      var queryContainingErrorInducingData = {isbn: "12345"};
+      var queryContainingErrorInducingData = {
+        isbn: "12345"
+      };
 
       it('should throw an error rejecting the parameter as invalid', function() {
-          return bookRepositoryModule.getBooks(queryContainingErrorInducingData)
+        return bookRepositoryModule.getBooks(queryContainingErrorInducingData)
           .then(function(data) {
             throw new Error("fail");
           })
           .catch(function(error) {
             error.message.should.equal("There was an error getting the requested Exam data: A nasty error occured.");
           });
-        });
       });
+    });
   });
 });

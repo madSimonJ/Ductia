@@ -16,7 +16,12 @@ exports.getBooks = function(searchParameters) {
   var query = assembleQuery(searchParameters);
   db.Find(bookCollectionName, query)
     .then(function(data) {
-      deferred.resolve(data);
+      var dataToReturn = data;
+
+      if (!!searchParameters.isbn && dataToReturn.length > 0) {
+        dataToReturn = dataToReturn[0];
+      }
+      deferred.resolve(dataToReturn);
     })
     .catch(function(error) {
       deferred.reject(new Error("There was an error getting the requested Exam data: " + error.message));
