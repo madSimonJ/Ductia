@@ -8,7 +8,7 @@ Object.defineProperty(protractor.promise.Promise.prototype, 'should', {
   set: Object.prototype.__lookupSetter__('should')
 });
 
-describe('the book section', function() {
+describe('the book index page', function() {
 
   var bookListRepeater;
   var bookListCount;
@@ -52,18 +52,61 @@ describe('the book section', function() {
   });
 
   it('should display the book\'s isbn', function() {
-      bookListFirstIsbn13.should.equal('9781848494923');
-    });
+    bookListFirstIsbn13.should.equal('9781848494923');
+  });
 
-    it('should display the book\'s publisher', function() {
-        bookListFirstPublisher.should.equal('Associated Board of the Royal Schools of Music, United Kingdom');
-      });
+  it('should display the book\'s publisher', function() {
+    bookListFirstPublisher.should.equal('Associated Board of the Royal Schools of Music, United Kingdom');
+  });
 
   it('should display the book\'s publication date', function() {
-      bookListFirstPublicationDate.should.equal('2013');
-    });
+    bookListFirstPublicationDate.should.equal('2013');
+  });
 });
 
-describe('the book detail section', function() {
-  
+describe('the book detail page', function() {
+
+  var bookTitleElement, bookTitleText;
+  var bookIsbn13Element, bookIsbn13Text;
+  var bookPublisherElement, bookPublisherText;
+  var bookPublicationDateElement, bookPublicationDateText;
+
+  beforeEach(function() {
+    browser.get('http://localhost:8080/books/9790220906466');
+
+    bookTitleElement = element(by.binding('Book.title'));
+    bookIsbn13Element = element(by.binding('Book.isbn13'));
+    bookPublisherElement = element(by.binding('Book.publisher'));
+    bookPublicationDateElement = element(by.binding('Book.publicationDate'));
+    bookTitleElement.getText().then(function(text) {
+      bookTitleText = text;
+    });
+    bookIsbn13Element.getText().then(function(text) {
+      bookIsbn13Text = text;
+    });
+    bookPublisherElement.getText().then(function(text) {
+      bookPublisherText = text;
+    });
+    bookPublicationDateElement.getText().then(function(text) {
+      bookPublicationDateText = text;
+    });
+
+  });
+
+  it('should display the title of the selected book', function() {
+    bookTitleText.should.equal('Harlequin, Book 1');
+  });
+
+  it('should display the isbn of the selected book', function() {
+    bookIsbn13Text.should.equal('9790220906466');
+  });
+
+  it('should display the publisher of the selected book', function() {
+    bookPublisherText.should.equal('Cramer Music');
+  });
+
+  it('should display the publication date of the selected book', function() {
+    bookPublicationDateText.should.equal('2004');
+  });
+
 });

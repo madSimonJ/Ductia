@@ -41,7 +41,43 @@ describe('the pieceRepository module', function() {
     sandbox.verifyAndRestore();
   });
 
-    describe('getExams function', function() {
+    describe('getPieces function', function() {
+
+    describe('getPieceList function', function() {
+
+      describe('given a list of valid pieceIds', function() {
+        var expectedQuery = { _id: { $in: ['piece39', 'piece40', 'piece41'] } };
+        var validPieceIds = ['piece39', 'piece40', 'piece41'];
+        var getPieceResults;
+        var dbFindFunctionStub;
+        var firstCallToFindFunction;
+
+        before(function() {
+          getPieceResults = pieceRepositoryModule.getPieceList({pieceIdList: validPieceIds});
+          dbFindFunctionStub = stubbedDatabaseConfigModule.Find;
+          firstCallToFindFunction = dbFindFunctionStub.firstCall;
+        });
+
+        after(function() {
+          sandbox.reset();
+          stubbedDatabaseConfigModule.Find.reset();
+        });
+
+        it('should call the dbConfigModule Find function once', function() {
+          dbFindFunctionStub.callCount.should.equal(1);
+        });
+
+        it('should make a call to the "piece" collection', function() {
+          firstCallToFindFunction.args[0].should.equal('piece');
+        });
+
+        it('should create the expected query to pass to the dbConfigMoudule', function() {
+          firstCallToFindFunction.args[1].should.eql(expectedQuery);
+        });
+
+      });
+
+    })
 
     describe('given a valid piece id', function() {
 
@@ -60,6 +96,7 @@ describe('the pieceRepository module', function() {
       after(function() {
         sandbox.reset();
         stubbedDatabaseConfigModule.Find.reset();
+        dbFindFunctionStub.reset();
       });
 
       it('should call the dbConfigModule Find function once', function() {
