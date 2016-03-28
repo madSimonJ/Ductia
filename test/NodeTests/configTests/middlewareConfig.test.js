@@ -3,7 +3,7 @@
 var chai = require('chai');
 var mockery = require('mockery');
 var sinon = require('sinon');
-var path = require('path');
+// var path = require('path');
 var sandbox = sinon.sandbox.create();
 
 var should = chai.should();
@@ -67,6 +67,7 @@ describe('the middlewareConfig module', function() {
     mockery.registerMock('body-parser', stubbedBodyParserModule);
     mockery.registerMock('express-session', stubbedExpressSessionModule);
     mockery.registerMock('../falcor/falcorRoutes', stubbedFalcorRoutesModule);
+    mockery.registerAllowable('path', true);
     mockery.registerAllowable('../../../server/config/middlewareConfig', true);
     mockery.registerAllowable('../../../server/config/environmentVariables', true);
     middlewareConfigModule = require('../../../server/config/middlewareConfig');
