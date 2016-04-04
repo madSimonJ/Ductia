@@ -3,7 +3,7 @@
 var db = require('../config/databaseConfig');
 var routeResponses = require('../routes/routeResponses');
 var Q = require('q');
-var _ = require('underscore');
+var _ = require('lodash');
 
 var examCollectionName = 'exam';
 

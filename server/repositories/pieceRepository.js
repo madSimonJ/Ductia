@@ -25,6 +25,10 @@ exports.getPieces = function(searchParameters) {
     return deferred.promise;
 }
 
+exports.getPieceList = function(listOfIds) {
+
+}
+
 function assembleQuery(searchParameters) {
   var returnValue = {};
   if((!!searchParameters) && (!!searchParameters.pieceid)) {

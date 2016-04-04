@@ -53,10 +53,10 @@
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "jade": "^1.11.0",
-    "mongodb": "^2.1.11",
+    "lodash": "^4.7.0",
+    "mongodb": "^2.1.14",
     "morgan": "^1.7.0",
     "q": "^1.4.1",
-    "stylus": "^0.54.2",
-    "underscore": "^1.8.3"
+    "stylus": "^0.54.2"
   }
 }
