@@ -34,7 +34,6 @@ describe('the pieceController Module', function() {
     mockery.registerMock('../routes/routeResponses', stubbedRouteResponsesModule);
     mockery.registerAllowable('../../../server/controllers/pieceController', true);
     pieceControllerModule = require('../../../server/controllers/pieceController');
-    console.log('mockreq = ' + JSON.stringify(mockReq));
     pieceControllerModule.handlePieceGetRequest(mockReq, mockRes);
   });
 
@@ -74,4 +73,4 @@ describe('the pieceController Module', function() {
 
   });
 
-})
+});

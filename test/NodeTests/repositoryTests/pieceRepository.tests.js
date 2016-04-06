@@ -9,6 +9,7 @@ var should = chai.should();
 
 var FindStub = sandbox.stub();
 FindStub.withArgs(sinon.match("piece"), sinon.match.has("_id", "piece39")).returns(q.resolve({valid: true}));
+FindStub.withArgs(sinon.match("piece"), sinon.match.has("_id", { $in: ['piece39', 'piece40', 'piece41'] })).returns(q.resolve({valid: true}));
 FindStub.withArgs(sinon.match("piece"), sinon.match.any).returns(q.reject(new Error("A nasty error occured.")));
 
 var stubbedDatabaseConfigModule = {
@@ -50,8 +51,15 @@ describe('the pieceRepository module', function() {
       var dbFindFunctionStub;
       var firstCallToFindFunction;
 
-      before(function() {
-        getPieceResults = pieceRepositoryModule.getPieceList({pieceIdList: validPieceIds});
+      before(function(done) {
+        pieceRepositoryModule.getPieceList(validPieceIds)
+          .then(function(data) {
+            getPieceResults = data;
+            done();
+          })
+          .catch(function(error) {
+            done();
+          });
         dbFindFunctionStub = stubbedDatabaseConfigModule.Find;
         firstCallToFindFunction = dbFindFunctionStub.firstCall;
       });
@@ -73,8 +81,10 @@ describe('the pieceRepository module', function() {
         firstCallToFindFunction.args[1].should.eql(expectedQuery);
       });
 
+      it('should return a promise that resolves to the expected return data', function() {
+        getPieceResults.valid.should.be.true;
+      });
     });
-
   });
 
   describe('getPieces function', function() {

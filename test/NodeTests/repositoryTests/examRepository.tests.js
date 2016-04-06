@@ -37,7 +37,7 @@ describe('the examRepositoryModule', function() {
     mockery.registerMock('../config/databaseConfig', stubbedDatabaseConfigModule);
     mockery.registerMock('../routes/routeResponses', stubbedRouteResponsesModule);
     mockery.registerAllowable('q');
-    mockery.registerAllowable('underscore');
+    mockery.registerAllowable('lodash');
     mockery.registerAllowable('../../../server/repositories/examRepository', true);
     examRepositoryModule = require('../../../server/repositories/examRepository');
   });
