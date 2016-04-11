@@ -28,10 +28,12 @@ exports.handleBookGetRequest = function(req, res) {
           deferred.resolve(bookRecord)
         })
         .catch(function(error) {
+          console.log("error1");
           deferred.fail("oh dear");
         });
     })
     .catch(function(error) {
+      console.log("error2");
         deferred.fail("oh dear, oh dear");
     });
   routeResponses.SendDocumentIfFound(req, res, deferred);

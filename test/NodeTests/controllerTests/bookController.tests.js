@@ -295,7 +295,6 @@ describe('the bookController Module', function() {
         it('should return a rejected promise', function() {
           var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
           var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
-          console.log('promise = ' + routeResponseDeferredParameter);
           return routeResponseDeferredParameter.promise.should.be.rejected;
         });
 
