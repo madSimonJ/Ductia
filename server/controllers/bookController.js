@@ -29,12 +29,12 @@ exports.handleBookGetRequest = function(req, res) {
         })
         .catch(function(error) {
           console.log("error1");
-          deferred.fail("oh dear");
+          deferred.reject("oh dear");
         });
     })
     .catch(function(error) {
       console.log("error2");
-        deferred.fail("oh dear, oh dear");
+      deferred.reject("oh dear, oh dear");
     });
   routeResponses.SendDocumentIfFound(req, res, deferred);
 }
