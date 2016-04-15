@@ -101,12 +101,18 @@ var expectedMergedBookDataToBeReturned = {
   "publicationDate": 2013,
   "publisher": "Associated Board of the Royal Schools of Music, United Kingdom",
   "title": "Flute Exam Pieces, Grade 1 (2014-2017)"
-};
+}
+
+var bookRecordThatWillCauseAnError = {
+  piecesInBook: [{
+    piece_id: 'invalid'
+  }]
+}
 
 var getBooksStub = sandbox.stub();
 getBooksStub.withArgs(sinon.match.has('isbn', '9781848494923')).returns(q.resolve(validBookRecord));
 getBooksStub.withArgs(sinon.match.has('isbn', 'invalid')).returns(q.reject(new Error("A nasty error occured.")));
-
+getBooksStub.withArgs(sinon.match.has('isbn', 'givemearecordthatwillcauseanerror')).returns(q.resolve(bookRecordThatWillCauseAnError));
 
 var stubbedBookRepositoryModule = {
   getBooks: getBooksStub
@@ -163,8 +169,12 @@ var expectedPieceQueryList = [
 ]
 
 var getPieceListStub = sandbox.stub();
-getPieceListStub.withArgs(sinon.match.array).returns(q.resolve(pieceData));
-getPieceListStub.withArgs(sinon.match("invalid")).returns(q.reject(new Error("A nasty error occured.")));
+getPieceListStub.withArgs(sinon.match(function(value) {
+  return value.length == 9;
+})).returns(q.resolve(pieceData));
+getPieceListStub.withArgs(sinon.match(function(value) {
+  return value[0] === "invalid";
+})).returns(q.reject(new Error("A nasty error occured.")));
 
 var stubbedPieceRepositoryModule = {
   getPieceList: getPieceListStub,
@@ -273,7 +283,7 @@ describe('the bookController Module', function() {
 
     });
 
-    describe('given a request to the piece repository that will cause an error', function() {
+    describe('given a request to the book repository that will cause an error', function() {
 
       var mockReqThatWillCauseErrors = {
         name: 'req',
@@ -298,10 +308,45 @@ describe('the bookController Module', function() {
           return routeResponseDeferredParameter.promise.should.be.rejected;
         });
 
+        it('should return details of the error', function() {
+          var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+          var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+          return routeResponseDeferredParameter.promise.should.be.rejectedWith('An error occured fetching details of the Book: "A nasty error occured."');
+        });
       });
-
     });
 
-  });
+    describe('given a request to the piece repository that will cause an error', function() {
 
-})
+      var mockReqThatWillReturnAnErrorFromPieceRepository = {
+        name: 'req',
+        params: {
+          isbn: 'givemearecordthatwillcauseanerror'
+        }
+      };
+
+      before(function() {
+        bookControllerModule.handleBookGetRequest(mockReqThatWillReturnAnErrorFromPieceRepository, mockRes);
+      });
+
+      describe('when getting details of a single book', function() {
+
+        after(function() {
+          stubbedRouteResponsesModule.SendDocumentIfFound.reset();
+        });
+
+        it('should return a rejected promise', function() {
+          var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+          var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+          return routeResponseDeferredParameter.promise.should.be.rejected;
+        });
+
+        it('should return details of the error', function() {
+          var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+          var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+          return routeResponseDeferredParameter.promise.should.be.rejectedWith('An error occured fetching details of the Book\'s pieces: "A nasty error occured."');
+        });
+      });
+    });
+  });
+});

@@ -10,10 +10,8 @@ exports.handleBookGetRequest = function(req, res) {
   };
 
   var deferred = q.defer();
-
   var bookRecord;
   var pieceRecords;
-
   bookRepository.getBooks(query)
     .then(function(data) {
       bookRecord = data;
@@ -28,15 +26,13 @@ exports.handleBookGetRequest = function(req, res) {
           deferred.resolve(bookRecord)
         })
         .catch(function(error) {
-          console.log("error1");
-          deferred.reject("oh dear");
+          deferred.reject('An error occured fetching details of the Book\'s pieces: "' + error.message + '"');
         });
     })
     .catch(function(error) {
-      console.log("error2");
-      deferred.reject("oh dear, oh dear");
+      deferred.reject('An error occured fetching details of the Book: "' + error.message + '"');
     });
-  routeResponses.SendDocumentIfFound(req, res, deferred);
+  routeResponses.SendDocumentIfFound(req, res, deferred.promise);
 }
 
 function joinObjectResults(bookRecord, pieceRecords) {
