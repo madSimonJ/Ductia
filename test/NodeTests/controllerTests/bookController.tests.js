@@ -250,13 +250,13 @@ describe('the bookController Module', function() {
         it('should forward a promise to the routeReponses module that is fulfilled', function() {
           var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
           var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
-          return routeResponseDeferredParameter.promise.should.be.fulfilled;
+          return routeResponseDeferredParameter.should.be.fulfilled;
         });
 
         it('should forward a promise to the routeReponses module that resolves to a merged data object containing book & piece information', function() {
           var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
           var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
-          return routeResponseDeferredParameter.promise.should.eventually.eql(expectedMergedBookDataToBeReturned);
+          return routeResponseDeferredParameter.should.eventually.eql(expectedMergedBookDataToBeReturned);
         });
 
         it('should call the bookRepository getBooks function', function() {
@@ -305,13 +305,13 @@ describe('the bookController Module', function() {
         it('should return a rejected promise', function() {
           var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
           var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
-          return routeResponseDeferredParameter.promise.should.be.rejected;
+          return routeResponseDeferredParameter.should.be.rejected;
         });
 
         it('should return details of the error', function() {
           var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
           var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
-          return routeResponseDeferredParameter.promise.should.be.rejectedWith('An error occured fetching details of the Book: "A nasty error occured."');
+          return routeResponseDeferredParameter.should.be.rejectedWith('An error occured fetching details of the Book: "A nasty error occured."');
         });
       });
     });
@@ -338,13 +338,13 @@ describe('the bookController Module', function() {
         it('should return a rejected promise', function() {
           var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
           var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
-          return routeResponseDeferredParameter.promise.should.be.rejected;
+          return routeResponseDeferredParameter.should.be.rejected;
         });
 
         it('should return details of the error', function() {
           var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
           var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
-          return routeResponseDeferredParameter.promise.should.be.rejectedWith('An error occured fetching details of the Book\'s pieces: "A nasty error occured."');
+          return routeResponseDeferredParameter.should.be.rejectedWith('An error occured fetching details of the Book\'s pieces: "A nasty error occured."');
         });
       });
     });
