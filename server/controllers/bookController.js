@@ -1,7 +1,7 @@
 var bookRepository = require('../repositories/bookRepository');
 var pieceRepository = require('../repositories/pieceRepository');
-var _ = require('lodash');
 var routeResponses = require('../routes/routeResponses');
+var _ = require('lodash');
 var q = require('q');
 
 exports.handleBookGetRequest = function(req, res) {

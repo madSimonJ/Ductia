@@ -21,13 +21,10 @@ exports.handleExamGetRequest = function(req, res) {
       var listOfIds = _.union(data.lists.A, data.lists.B, data.lists.C);
       pieceRepository.getPieceList(listOfIds)
         .then(function(data) {
-          console.log('1');
           pieceData = data;
-          //var joinedData = joinObjectResults(examData, pieceData);
-          examData.lists.A = joinObjectResults(exam.lists.A, pieceData);
-          examData.lists.B = joinObjectResults(exam.lists.B, pieceData);
-          examData.lists.C = joinObjectResults(exam.lists.C, pieceData);
-          console.log('examData = ' + examData);
+          examData.lists.A = joinObjectResults(examData.lists.A, pieceData);
+          examData.lists.B = joinObjectResults(examData.lists.B, pieceData);
+          examData.lists.C = joinObjectResults(examData.lists.C, pieceData);
           deferred.resolve(examData);
         })
         .catch(function(error) {
@@ -41,10 +38,12 @@ exports.handleExamGetRequest = function(req, res) {
   routeResponses.SendDocumentIfFound(req, res, deferred.promise);
 }
 
-function joinObjectResults(examRecord, pieceRecords) {
+function joinObjectResults(list, pieceRecords) {
   return _.map(list, function(pieceId) {
     var relatedPieceRecord = _.find(pieceRecords, function(pieceRecord) {
-      return pieceRecord._id == pieceInBook.piece_id;
+      return pieceRecord._id == pieceId;
     });
+    relatedPieceRecord.pieceId = pieceId;
+    return _.omit(relatedPieceRecord, '_id');
   });
 }

@@ -8,6 +8,9 @@ var q = require('q');
 
 var should = chai.should();
 
+var chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
+
 var validExamData = {
   _id: 'exam-flute-2014-grade1',
   instrument: 'flute',
@@ -32,7 +35,7 @@ var stubbedExamRepositoryModule = {
 };
 
 
-var expectedQuery = [ 'piece1',
+var expectedQuery = ['piece1',
   'piece2',
   'piece3',
   'piece10',
@@ -58,7 +61,8 @@ var expectedQuery = [ 'piece1',
   'piece27',
   'piece28',
   'piece29',
-  'piece30' ];
+  'piece30'
+];
 
 var mockReq = {
   name: "req",
@@ -207,6 +211,130 @@ var stubbedPieceRepositoryModule = {
   getPieces: sandbox.stub()
 }
 
+var expectedExamData = {
+  "_id": "exam-flute-2014-grade1",
+  "instrument": "flute",
+  "grade": 1,
+  "dateValidFrom": 2014,
+  "dateValidTo": 2017,
+  "examBoard": "abrsm",
+  "lists": {
+    "A": [{
+      "pieceId": "piece1",
+      "composer": "Hook",
+      "title": "Minuetto: 2nd movt from Sonata in Eb, Op. 99 No. 3, arr. Wastall"
+    }, {
+      "pieceId": "piece2",
+      "composer": "Purcell",
+      "title": "Rigaudon, Z. 653, arr. Stuart"
+    }, {
+      "pieceId": "piece3",
+      "composer": "Trad. Irish",
+      "title": "The Rakes o’ Mallow, arr. Denley"
+    }, {
+      "pieceId": "piece10",
+      "composer": "A. M. Bononcini",
+      "title": "Bella Vittoria"
+    }, {
+      "pieceId": "piece11",
+      "composer": "Daquin ",
+      "title": "Noël"
+    }, {
+      "pieceId": "piece12",
+      "composer": "Schubert",
+      "title": "Waltz No. 16"
+    }, {
+      "pieceId": "piece13",
+      "composer": "Sholom Secunda",
+      "title": "Donna Donna (observing repeat)"
+    }, {
+      "pieceId": "piece14",
+      "composer": "Trad. English",
+      "title": "Blow the Wind Southerly"
+    }, {
+      "pieceId": "piece15",
+      "composer": "Trad. Welsh",
+      "title": "The Ash Grove"
+    }],
+    "B": [{
+      "pieceId": "piece16",
+      "composer": "Heather Hammond",
+      "title": "Funk Factory"
+    }, {
+      "pieceId": "piece17",
+      "composer": "Alan Haughton",
+      "title": "Partying"
+    }, {
+      "pieceId": "piece18",
+      "composer": "Cecilia McDowall",
+      "title": "Moulin Rose"
+    }, {
+      "pieceId": "piece19",
+      "composer": "Aldo Rossi",
+      "title": "Un dolce sogno (A Sweet Dream)"
+    }, {
+      "pieceId": "piece20",
+      "composer": "R. & R. Sherman  ",
+      "title": "Truly Scrumptious (from Chitty Chitty Bang Bang)"
+    }, {
+      "pieceId": "piece21",
+      "composer": "Sullivan",
+      "title": "Prithee, Pretty Maiden (from Patience)"
+    }],
+    "C": [{
+      "pieceId": "piece4",
+      "composer": "Keith Amos",
+      "title": "Lupin, the Pot-Bellied Pig: No. 9"
+    }, {
+      "pieceId": "piece5",
+      "composer": "Ros Stephen",
+      "title": "Guanabara Bay"
+    }, {
+      "pieceId": "piece6",
+      "composer": "Rogers & Hammerstein",
+      "title": "Edelweiss"
+    }, {
+      "pieceId": "piece22",
+      "composer": "Alan Bullard",
+      "title": "Hungarian Flute"
+    }, {
+      "pieceId": "piece23",
+      "composer": "Alan Bullard",
+      "title": "Marching Flute"
+    }, {
+      "pieceId": "piece24",
+      "composer": "Paul Harris",
+      "title": "Study in C"
+    }, {
+      "pieceId": "piece25",
+      "composer": "Paul Harris",
+      "title": "Study in G"
+    }, {
+      "pieceId": "piece26",
+      "composer": "Paul Harris",
+      "title": "Study in F"
+    }, {
+      "pieceId": "piece27",
+      "composer": "Mike Mower",
+      "title": "Straight to the Point"
+    }, {
+      "pieceId": "piece28",
+      "composer": "Mike Mower",
+      "title": " Knock Knock"
+    }, {
+      "pieceId": "piece29",
+      "composer": "Philip Sparke",
+      "title": "Modal Melody"
+    }, {
+      "pieceId": "piece30",
+      "composer": "Philip Sparke",
+      "title": "Shalom!"
+    }]
+  }
+}
+
+
+
 var examControllerModule;
 
 describe('the examController Module', function() {
@@ -246,7 +374,7 @@ describe('the examController Module', function() {
 
       });
 
-      describe('when getting the details of a single book', function() {
+      describe('when getting the details of a single exam', function() {
 
         before(function() {
           examControllerModule.handleExamGetRequest(mockReq, mockRes);
@@ -275,6 +403,18 @@ describe('the examController Module', function() {
           routeResponseResParameter.name.should.equal("res");
         });
 
+        it('should forward a promise to the RouteResponses module that resolves', function() {
+          var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+          var routeResponsePromiseParameter = callToRouteReponsesModule.args[2];
+          return routeResponsePromiseParameter.should.be.fulfilled;
+        });
+
+        it('should forward a promise that resolves to the expected merged exam and book data', function() {
+          var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+          var routeResponsePromiseParameter = callToRouteReponsesModule.args[2];
+          return routeResponsePromiseParameter.should.eventually.eql(expectedExamData);
+        });
+
         it('should call the examRepository getExam function', function() {
           stubbedExamRepositoryModule.getExams.callCount.should.equal(1);
         });
@@ -297,17 +437,16 @@ describe('the examController Module', function() {
           getExamQueryParamter.grade.should.equal(1);
         });
 
-        it('should call the Piece Repository getPieces function', function() {
-          var callToPieceRepositoryModule = stubbedPieceRepositoryModule.getPieces;
+        it('should call the Piece Repository getPieceList function', function() {
+          var callToPieceRepositoryModule = stubbedPieceRepositoryModule.getPieceList;
           callToPieceRepositoryModule.callCount.should.equal(1);
         });
 
         it('should pass a list of pieces to the piece Repository as a parameter', function() {
-          var callToPieceRepositoryModule = stubbedPieceRepositoryModule.getPieces;
+          var callToPieceRepositoryModule = stubbedPieceRepositoryModule.getPieceList;
           var calltoPieceRepositoryQuery = callToPieceRepositoryModule.firstCall.args[0];
           calltoPieceRepositoryQuery.should.eql(expectedQuery);
         });
-
       });
     });
   });
