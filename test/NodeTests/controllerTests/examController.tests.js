@@ -5,6 +5,7 @@ var mockery = require('mockery');
 var sinon = require('sinon');
 var sandbox = sinon.sandbox.create();
 var q = require('q');
+var _ = require('lodash');
 
 var should = chai.should();
 
@@ -25,10 +26,33 @@ var validExamData = {
   }
 };
 
+var examDataThatWillCauseAnErrorGettingPieceData = {
+  _id: 'exam-flute-2014-grade1',
+  instrument: 'flute',
+  grade: 1,
+  dateValidFrom: 2014,
+  dateValidTo: 2017,
+  examBoard: 'abrsm',
+  lists: {
+    A: ['invalidvalue', 'piece2', 'piece3', 'piece10', 'piece11', 'piece12', 'piece13', 'piece14', 'piece15'],
+    B: ['piece16', 'piece17', 'piece18', 'piece19', 'piece20', 'piece21'],
+    C: ['piece4', 'piece5', 'piece6', 'piece22', 'piece23', 'piece24', 'piece25', 'piece26', 'piece27', 'piece28', 'piece29', 'piece30']
+  }
+
+}
+
 var getExamsStub = sandbox.stub();
 getExamsStub.withArgs(sinon.match(function(value) {
-  return value.board === 'abrsm' && value.instrument === 'flute' && value.grade === 1;
+  return value.board === 'abrsm' || value.instrument === 'flute' || value.grade === 1;
 })).returns(q.resolve(validExamData));
+
+getExamsStub.withArgs(sinon.match(function(value) {
+  return value.board === 'invalid';
+})).returns(q.reject(new Error("A nasty error occured.")));
+
+getExamsStub.withArgs(sinon.match(function(value) {
+  return value.board === 'boardThatWillCauseAnErrorInPieceRepository';
+})).returns(q.resolve(examDataThatWillCauseAnErrorGettingPieceData));
 
 var stubbedExamRepositoryModule = {
   getExams: getExamsStub
@@ -63,19 +87,6 @@ var expectedQuery = ['piece1',
   'piece29',
   'piece30'
 ];
-
-var mockReq = {
-  name: "req",
-  params: {
-    board: 'abrsm',
-    instrument: 'flute',
-    grade: 1
-  }
-};
-
-var mockRes = {
-  name: "res"
-};
 
 var stubbedRouteResponsesModule = {
   SendDocumentIfFound: sandbox.stub()
@@ -204,7 +215,13 @@ var pieceData = [{
 }];
 
 var getPieceListStub = sandbox.stub();
-getPieceListStub.withArgs(sinon.match.array).returns(q.resolve(pieceData));
+getPieceListStub.withArgs(sinon.match.array.and(sinon.match(function(value) {
+  return value[0] !== 'invalidvalue';
+}))).returns(q.resolve(pieceData));
+
+getPieceListStub.withArgs(sinon.match.array.and(sinon.match(function(value) {
+  return value[0] === 'invalidvalue';
+}))).returns(q.reject(new Error('A nasty error occured')));
 
 var stubbedPieceRepositoryModule = {
   getPieceList: getPieceListStub,
@@ -333,8 +350,6 @@ var expectedExamData = {
   }
 }
 
-
-
 var examControllerModule;
 
 describe('the examController Module', function() {
@@ -357,10 +372,6 @@ describe('the examController Module', function() {
     mockery.deregisterAll();
   });
 
-  beforeEach(function() {
-
-  });
-
   afterEach(function() {
     sandbox.verifyAndRestore();
     sandbox.reset();
@@ -376,6 +387,19 @@ describe('the examController Module', function() {
 
       describe('when getting the details of a single exam', function() {
 
+        let mockReq = {
+          name: "req",
+          params: {
+            board: 'abrsm',
+            instrument: 'flute',
+            grade: 1
+          }
+        };
+
+        var mockRes = {
+          name: "res"
+        };
+
         before(function() {
           examControllerModule.handleExamGetRequest(mockReq, mockRes);
         });
@@ -383,6 +407,7 @@ describe('the examController Module', function() {
         after(function() {
           stubbedExamRepositoryModule.getExams.reset();
           stubbedPieceRepositoryModule.getPieces.reset();
+          stubbedRouteResponsesModule.SendDocumentIfFound.reset();
         });
 
         afterEach(function() {
@@ -449,5 +474,256 @@ describe('the examController Module', function() {
         });
       });
     });
+
+    describe('given a set of parameters that will cause an error in the exam repository', function() {
+
+      let mockReq = {
+        name: "req",
+        params: {
+          board: 'invalid',
+          instrument: 'guitar',
+          grade: 3
+        }
+      };
+
+      var mockRes = {
+        name: "res"
+      };
+
+      before(function() {
+        examControllerModule.handleExamGetRequest(mockReq, mockRes);
+      });
+
+      after(function() {
+        stubbedExamRepositoryModule.getExams.reset();
+        stubbedPieceRepositoryModule.getPieces.reset();
+        stubbedRouteResponsesModule.SendDocumentIfFound.reset();
+      });
+
+      afterEach(function() {
+        sandbox.verifyAndRestore();
+      });
+
+      it('should return a failed promise', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejected;
+      });
+
+      it('should throw the expected error message', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejectedWith('An error occured getting exam data: A nasty error occured');
+      });
+    });
+
+    describe('given a set of parameters that will cause an error getting piece data', function() {
+      let mockReq = {
+        name: "req",
+        params: {
+          board: 'boardThatWillCauseAnErrorInPieceRepository',
+          instrument: 'piano',
+          grade: 2
+        }
+      };
+
+      var mockRes = {
+        name: "res"
+      };
+
+      before(function() {
+        examControllerModule.handleExamGetRequest(mockReq, mockRes);
+      });
+
+      after(function() {
+        stubbedExamRepositoryModule.getExams.reset();
+        stubbedPieceRepositoryModule.getPieces.reset();
+        stubbedRouteResponsesModule.SendDocumentIfFound.reset();
+      });
+
+      afterEach(function() {
+        sandbox.verifyAndRestore();
+      });
+
+      it('should return a failed promise', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejected;
+      });
+
+      it('should throw the expected error message', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejectedWith('An error occured getting piece data: A nasty error occured');
+      });
+
+    });
+
+    describe('given a set of parameters with no board', function() {
+
+      let mockReq = {
+        name: "req",
+        params: {
+          instrument: 'flute',
+          grade: 1
+        }
+      };
+
+      var mockRes = {
+        name: "res"
+      };
+
+      before(function() {
+        examControllerModule.handleExamGetRequest(mockReq, mockRes);
+      });
+
+      after(function() {
+        stubbedExamRepositoryModule.getExams.reset();
+        stubbedPieceRepositoryModule.getPieces.reset();
+        stubbedRouteResponsesModule.SendDocumentIfFound.reset();
+      });
+
+      afterEach(function() {
+        sandbox.verifyAndRestore();
+      });
+
+      it('should return a failed promise', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejected;
+      });
+
+      it('should throw the expected error message', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejectedWith('There was an issue with the parameters supplied: no board was specified');
+      });
+    });
+
+    describe('given a set of parameters with no instrument', function() {
+
+      let mockReq = {
+        name: "req",
+        params: {
+          board: 'abrsm',
+          grade: 1
+        }
+      };
+
+      var mockRes = {
+        name: "res"
+      };
+
+      before(function() {
+        examControllerModule.handleExamGetRequest(mockReq, mockRes);
+      });
+
+      after(function() {
+        stubbedExamRepositoryModule.getExams.reset();
+        stubbedPieceRepositoryModule.getPieces.reset();
+        stubbedRouteResponsesModule.SendDocumentIfFound.reset();
+      });
+
+      afterEach(function() {
+        sandbox.verifyAndRestore();
+      });
+
+      it('should return a failed promise', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejected;
+      });
+
+      it('should throw the expected error message', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejectedWith('There was an issue with the parameters supplied: no instrument was specified');
+      });
+    });
+
+    describe('given a set of parameters with no grade', function() {
+
+      let mockReq = {
+        name: "req",
+        params: {
+          board: 'abrsm',
+          instrument: 'flute'
+        }
+      };
+
+      var mockRes = {
+        name: "res"
+      };
+
+      before(function() {
+        examControllerModule.handleExamGetRequest(mockReq, mockRes);
+      });
+
+      after(function() {
+        stubbedExamRepositoryModule.getExams.reset();
+        stubbedPieceRepositoryModule.getPieces.reset();
+        stubbedRouteResponsesModule.SendDocumentIfFound.reset();
+      });
+
+      afterEach(function() {
+        sandbox.verifyAndRestore();
+      });
+
+      it('should return a failed promise', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejected;
+      });
+
+      it('should throw the expected error message', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejectedWith('There was an issue with the parameters supplied: no grade was specified');
+      });
+    });
+
+    describe('given a set of parameters in which the grade is not a number', function() {
+
+      let mockReq = {
+        name: "req",
+        params: {
+          board: 'abrsm',
+          instrument: 'flute',
+          grade: 'thisisnotanumber'
+        }
+      };
+
+      var mockRes = {
+        name: "res"
+      };
+
+      before(function() {
+        examControllerModule.handleExamGetRequest(mockReq, mockRes);
+      });
+
+      after(function() {
+        stubbedExamRepositoryModule.getExams.reset();
+        stubbedPieceRepositoryModule.getPieces.reset();
+        stubbedRouteResponsesModule.SendDocumentIfFound.reset();
+      });
+
+      afterEach(function() {
+        sandbox.verifyAndRestore();
+      });
+
+      it('should return a failed promise', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejected;
+      });
+
+      it('should throw the expected error message', function() {
+        var callToRouteReponsesModule = stubbedRouteResponsesModule.SendDocumentIfFound.firstCall;
+        var routeResponseDeferredParameter = callToRouteReponsesModule.args[2];
+        return routeResponseDeferredParameter.should.be.rejectedWith('There was an issue with the parameters supplied: the specified grade was not a number');
+      });
+    });
+
+
   });
 })
